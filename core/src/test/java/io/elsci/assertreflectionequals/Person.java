@@ -1,4 +1,4 @@
-package Assertion;
+package io.elsci.assertreflectionequals;
 
 public class Person {
     long id;
