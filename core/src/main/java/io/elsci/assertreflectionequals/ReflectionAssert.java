@@ -3,7 +3,7 @@ package io.elsci.assertreflectionequals;
 import java.lang.reflect.Field;
 
 public class ReflectionAssert {
-    public static void assertReflectionEquals(Object expected, Object actual) throws IllegalAccessException {
+    public static void assertReflectionEquals(Object expected, Object actual) {
         if (expected == null && actual == null) {
             return;
         }
@@ -26,9 +26,13 @@ public class ReflectionAssert {
             expectedFields[i].setAccessible(true);
             actualFields[i].setAccessible(true);
 
-            if(!expectedFields[i].get(expected).equals(actualFields[i].get(actual))) {
-                buildErrorMessage(expectedFields[i].get(expected), expectedFields[i].getName(),
-                        actualFields[i].get(actual), actualFields[i].getName(), errorMessage);
+            try {
+                if (!expectedFields[i].get(expected).equals(actualFields[i].get(actual))) {
+                    buildErrorMessage(expectedFields[i].get(expected), expectedFields[i].getName(),
+                            actualFields[i].get(actual), actualFields[i].getName(), errorMessage);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         }
 
