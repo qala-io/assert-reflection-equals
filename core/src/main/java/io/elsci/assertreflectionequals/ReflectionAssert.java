@@ -72,9 +72,7 @@ public class ReflectionAssert {
             objectField.setAccessible(true);
             fields.add(objectField.getName());
         }
-        Iterator<String> iterator = excludedFields.iterator();
-        if (iterator.hasNext()) {
-            String name = iterator.next();
+        for(String name : excludedFields) {
             if(!fields.contains(name)) {
                 throw new IllegalArgumentException(name + " field is not property of specified object");
             }
