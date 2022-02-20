@@ -1,54 +1,85 @@
 package io.elsci.assertreflectionequals;
 
 import java.lang.reflect.Field;
+import java.util.*;
 
 public class ReflectionAssert {
-    public static void assertReflectionEquals(Object expected, Object actual) {
-        if (expected == null && actual == null) {
+    private final Set<String> excludedFields = new HashSet<>();
+
+    public void assertReflectionEquals(Object expected, Object actual) {
+        if(expected == null && actual == null) {
             return;
         }
-        if (expected == null || actual == null) {
+        if(expected == null || actual == null) {
             throwAssertionError("Objects are not equal since one of them is null");
         }
         StringBuilder errorMessage = new StringBuilder();
 
         Class<?> expectedClass = expected.getClass();
         Class<?> actualClass = actual.getClass();
-
         if(expectedClass != actualClass) {
-            throwAssertionError("Objects are not equal since their classes are different");
+            throwAssertionError("Expected " + expectedClass + ", but actual " + actualClass);
         }
 
-        Field[] expectedFields = expectedClass.getDeclaredFields();
-        Field[] actualFields = actualClass.getDeclaredFields();
-
-        for (int i = 0; i < expectedFields.length; i++) {
-            expectedFields[i].setAccessible(true);
-            actualFields[i].setAccessible(true);
-
+        Field[] fields = getProperFields(expectedClass.getDeclaredFields());
+        for(Field field : fields) {
+            field.setAccessible(true);
             try {
-                if (!expectedFields[i].get(expected).equals(actualFields[i].get(actual))) {
-                    buildErrorMessage(expectedFields[i].get(expected), expectedFields[i].getName(),
-                            actualFields[i].get(actual), actualFields[i].getName(), errorMessage);
+                if(!field.get(expected).equals(field.get(actual))) {
+                    buildErrorMessage(field.get(expected), field.getName(), field.get(actual), field.getName(), errorMessage);
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        if (errorMessage.length() != 0) {
+        if(errorMessage.length() != 0) {
             throwAssertionError(errorMessage.toString());
         }
-
     }
 
-    private static void buildErrorMessage(Object expectedValue, String expectedName,
+    public ReflectionAssert excludeFields(String ... fieldNames) {
+        excludedFields.addAll(Arrays.asList(fieldNames));
+        return this;
+    }
+
+    // Get proper array of fields in case some fields were excluded
+    private Field[] getProperFields(Field[] objectFields) {
+        if(excludedFields.isEmpty()) {
+            return objectFields;
+        }
+        verifyExcludedFields(excludedFields, objectFields);
+        ArrayList<Field> fields = new ArrayList<>();
+        for(Field objectField : objectFields) {
+            objectField.setAccessible(true);
+            if(!excludedFields.contains(objectField.getName())) {
+                fields.add(objectField);
+            }
+        }
+        return fields.toArray(new Field[0]);
+    }
+
+    // Verify if excluded field name belongs to the specified object
+    private void verifyExcludedFields(Set<String> excludedFields, Field[] objectFields) {
+        ArrayList<String> fields = new ArrayList<>();
+        for(Field objectField : objectFields) {
+            objectField.setAccessible(true);
+            fields.add(objectField.getName());
+        }
+        for(String name : excludedFields) {
+            if(!fields.contains(name)) {
+                throw new IllegalArgumentException(name + " is not field of specified object");
+            }
+        }
+    }
+
+    private void buildErrorMessage(Object expectedValue, String expectedName,
                                           Object actualValue, String actualName, StringBuilder errorMessage) {
         errorMessage.append("The ").append(expectedName).append(" of expected object is ").append(expectedValue).
                 append(", but actual ").append(actualName).append(" is ").append(actualValue).append("\n");
     }
 
-    private static void throwAssertionError(String message) {
+    private void throwAssertionError(String message) {
         throw new AssertionError(message);
     }
 }
