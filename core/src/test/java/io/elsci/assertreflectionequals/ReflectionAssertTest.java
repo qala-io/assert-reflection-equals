@@ -85,27 +85,27 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreEqualIfFieldsWithDifferentValuesWereExcluded() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f);
-        Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f);
+        Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f);
         new ReflectionAssert().excludeFields("id", "waist").assertReflectionEquals(person, person2);
     }
 
     @Test
     public void objectsAreEqualIfAllFieldsWereExcluded() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f);
-        Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f);
+        Person person2 = new Person(150245872L, (short) 26, 50.1008d, 165, (byte) 0b11, 70f);
         new ReflectionAssert().
                 excludeFields("id", "age", "weight", "height", "shoeSize", "waist").
                 assertReflectionEquals(person, person2);
     }
 
     @Test
-    public void returnsIllegalArgumentExceptionIfSpecifiedFieldIsNotPropertyOfSpecifiedObject() {
+    public void throwsIllegalArgumentExceptionIfSpecifiedFieldIsNotPropertyOfSpecifiedObject() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f);
         Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f);
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new ReflectionAssert().
                 excludeFields("id", "test").
                 assertReflectionEquals(person, person2));
-        assertEquals("test field is not property of specified object",
-                "test field is not property of specified object");
+        assertEquals("test field is not field of specified object",
+                "test field is not field of specified object");
     }
 }
