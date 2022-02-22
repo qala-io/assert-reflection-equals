@@ -1,5 +1,6 @@
 package io.elsci.assertreflectionequals;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -25,8 +26,15 @@ public class ReflectionAssert {
         for(Field field : fields) {
             field.setAccessible(true);
             try {
-                if(!field.get(expected).equals(field.get(actual))) {
-                    buildErrorMessage(field.get(expected), field.getName(), field.get(actual), field.getName(), errorMessage);
+                if (field.getType().isPrimitive()) {
+                    if (!field.get(expected).equals(field.get(actual))) {
+                        buildErrorMessage(field.get(expected), field.getName(), field.get(actual), field.getName(), errorMessage);
+                    }
+                } else if (field.getType().isArray()) {
+                    if (!compareArrays(field.get(expected), field.get(actual))) {
+                        buildErrorMessage(Arrays.toString(getArrayWithValues(field.get(expected))), field.getName(),
+                                Arrays.toString(getArrayWithValues(field.get(actual))), field.getName(), errorMessage);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -71,6 +79,34 @@ public class ReflectionAssert {
                 throw new IllegalArgumentException(name + " is not field of specified object");
             }
         }
+    }
+
+    // Compare arrays with primitives
+    private boolean compareArrays(Object expected, Object actual) {
+        if(expected == null && actual == null) {
+            return true;
+        }
+        if(expected == null || actual == null) {
+            return false;
+        }
+        Object[] expectedArray = getArrayWithValues(expected);
+        Object[] actualArray = getArrayWithValues(actual);
+        Arrays.sort(expectedArray);
+        Arrays.sort(actualArray);
+        return Arrays.equals(expectedArray, actualArray);
+    }
+
+    // Get array with primitives
+    private Object[] getArrayWithValues(Object o) {
+        if(o == null) {
+            return null;
+        }
+        Object[] elements = new Object[Array.getLength(o)];
+        for(int i = 0; i < Array.getLength(o); i++) {
+            Object element = Array.get(o, i);
+            elements[i] = element;
+        }
+        return elements;
     }
 
     private void buildErrorMessage(Object expectedValue, String expectedName,
