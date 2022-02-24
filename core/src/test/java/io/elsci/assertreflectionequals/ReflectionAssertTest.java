@@ -2,6 +2,10 @@ package io.elsci.assertreflectionequals;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
@@ -11,7 +15,7 @@ public class ReflectionAssertTest {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 new int[]{-5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-10, 897, -5, 7, 0}, new long[]{16, 34, 17, 149, 1});
+                new int[]{-5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
@@ -34,16 +38,16 @@ public class ReflectionAssertTest {
         Animal animal = new Animal(150245871L, (short) 25, 50.1007d, 164,
                 new byte[]{112, 114, 111}, new short[]{40, 30, 10});
         Animal animal2 = new Animal(150245871L, (short) 25, 50.1007d, 164,
-                new byte[]{111, 112, 114}, new short[]{10, 30, 40});
+                new byte[]{112, 114, 111}, new short[]{40, 30, 10});
         new ReflectionAssert().assertReflectionEquals(animal, animal2);
     }
 
     @Test
     public void possibleToCompareObjectsWithProtectedFields() {
-        Plant plant = new Plant(150245871L, (short) 3, 50,
+        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
                 new float[]{10.10f, 80.50f, 40.60f}, new double[]{100000d, 400000d, 90000d});
-        Plant plant2 = new Plant(150245871L, (short) 3, 50,
-                new float[]{80.50f, 40.60f, 10.10f}, new double[]{100000d, 400000d, 90000d});
+        Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
+                new float[]{10.10f, 80.50f, 40.60f}, new double[]{100000d, 400000d, 90000d});
         new ReflectionAssert().assertReflectionEquals(plant, plant2);
     }
 
@@ -61,7 +65,7 @@ public class ReflectionAssertTest {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f,
                 new int[]{5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f,
-                new int[]{-10, 0, 5, 897, 7}, new long[]{2, 17, 35, 150, 18});
+                new int[]{5, -10, 897, 0, 7}, new long[]{2, 17, 35, 150, 18});
         new ReflectionAssert().excludeFields("id", "longArray").assertReflectionEquals(person, person2);
     }
 
@@ -81,7 +85,7 @@ public class ReflectionAssertTest {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 null, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                null, new long[]{16, 34, 17, 149, 1});
+                null, new long[]{1, 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
@@ -125,14 +129,14 @@ public class ReflectionAssertTest {
                 new int[]{0, 0, 0, 0, 0}, new long[]{2, 17, 35, 150, 18});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("The id of expected object is 150245872, but actual id is 150245871\n" +
-                "The age of expected object is 30, but actual age is 25\n" +
-                "The weight of expected object is 55.1007, but actual weight is 50.1007\n" +
-                "The height of expected object is 170, but actual height is 164\n" +
-                "The shoeSize of expected object is 127, but actual shoeSize is 2\n" +
-                "The waist of expected object is 100.0, but actual waist is 69.0\n" +
-                "The intArray of expected object is [5, 10, 897, 0, 7], but actual intArray is [0, 0, 0, 0, 0]\n" +
-                "The longArray of expected object is [1, 16, 34, 149, 17], but actual longArray is [2, 17, 35, 150, 18]\n", e.getMessage());
+        assertEquals("Expected: Person.id is 150245872, actual: Person.id is 150245871\n" +
+                "Expected: Person.age is 30, actual: Person.age is 25\n" +
+                "Expected: Person.weight is 55.1007, actual: Person.weight is 50.1007\n" +
+                "Expected: Person.height is 170, actual: Person.height is 164\n" +
+                "Expected: Person.shoeSize is 127, actual: Person.shoeSize is 2\n" +
+                "Expected: Person.waist is 100.0, actual: Person.waist is 69.0\n" +
+                "Expected: Person.intArray is [5, 10, 897, 0, 7], actual: Person.intArray is [0, 0, 0, 0, 0]\n" +
+                "Expected: Person.longArray is [1, 16, 34, 149, 17], actual: Person.longArray is [2, 17, 35, 150, 18]\n", e.getMessage());
     }
 
     @Test
@@ -153,11 +157,11 @@ public class ReflectionAssertTest {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{10, 897, 5, 7, 0}, new long[]{16, 34, 17, 149, 1, 100});
+                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 1, 100});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("The longArray of expected object is [1, 16, 34], " +
-                "but actual longArray is [16, 34, 17, 149, 1, 100]\n", e.getMessage());
+        assertEquals("Expected: Person.longArray is [1, 16, 34], " +
+                "actual: Person.longArray is [1, 16, 34, 149, 1, 100]\n", e.getMessage());
     }
 
     @Test
@@ -165,11 +169,11 @@ public class ReflectionAssertTest {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 new int[]{5, 10, 897, 0, 7}, new long[]{});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{10, 897, 5, 7, 0}, new long[]{16, 34, 17, 149, 1, 100});
+                new int[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1, 100});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("The longArray of expected object is [], " +
-                "but actual longArray is [16, 34, 17, 149, 1, 100]\n", e.getMessage());
+        assertEquals("Expected: Person.longArray is [], " +
+                "actual: Person.longArray is [16, 34, 17, 149, 1, 100]\n", e.getMessage());
     }
 
     @Test
@@ -177,9 +181,10 @@ public class ReflectionAssertTest {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 new int[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{10, 897, 5, 7, 0}, null);
+                new int[]{5, 10, 897, 0, 7}, null);
         AssertionError e = assertThrows(AssertionError.class, () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("The longArray of expected object is [16, 34, 17, 149, 1], but actual longArray is null\n", e.getMessage());
+        assertEquals("Expected: Person.longArray is [16, 34, 17, 149, 1], " +
+                "actual: Person.longArray is null\n", e.getMessage());
     }
 
     @Test
@@ -190,6 +195,20 @@ public class ReflectionAssertTest {
                 new int[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("The longArray of expected object is null, but actual longArray is [16, 34, 17, 149, 1]\n", e.getMessage());
+        assertEquals("Expected: Person.longArray is null, " +
+                "actual: Person.longArray is [16, 34, 17, 149, 1]\n", e.getMessage());
+    }
+
+    @Test
+    public void throwUnsupportedOperationExceptionIfComparingFieldsAreCollection() {
+        Set<String> set = new HashSet<>();
+        set.add("cocci");
+        set.add("bacilli");
+        set.add("spirilla");
+        Bacteria bacteria = new Bacteria(set);
+        Bacteria bacteria2 = new Bacteria(set);
+        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, () ->
+                new ReflectionAssert().assertReflectionEquals(bacteria, bacteria2));
+        assertEquals("This operation is not supported yet", e.getMessage());
     }
 }
