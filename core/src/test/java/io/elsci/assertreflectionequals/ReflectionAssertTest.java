@@ -2,7 +2,6 @@ package io.elsci.assertreflectionequals;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,16 +12,16 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreEqualIfAllValuesOfTheirPropertiesAreEqual() {
         Person person = new Person(150245871L, (short) 25, Double.NaN, 164, (byte) 0b10, 69f,
-                new int[]{Integer.valueOf(-5), -10, 897, 0}, new long[]{Long.valueOf(1), 16, 34, 149, 17});
+                new Integer[]{-5, -10, 897, 0}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245871L, (short) 25, Double.NaN, 164, (byte) 0b10, 69f,
-                new int[]{Integer.valueOf(-5), -10, 897, 0, Integer.valueOf(7)}, new long[]{Long.valueOf(1), 16, 34, 149, 17});
+                new Integer[]{-5, -10, 897, 0}, new long[]{1, 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
     @Test
     public void objectIsEqualToItself() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{-5, -10, 897, 0}, new long[]{1, 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person);
     }
 
@@ -36,49 +35,49 @@ public class ReflectionAssertTest {
     @Test
     public void possibleToCompareObjectsWithPrivateFields() {
         Animal animal = new Animal(150245871L, (short) 25, 50.1007d, 164,
-                new byte[]{112, Byte.valueOf((byte) 114), 111}, new short[]{40, 30, Short.valueOf((short) 10)});
+                new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         Animal animal2 = new Animal(150245871L, (short) 25, 50.1007d, 164,
-                new byte[]{112, Byte.valueOf((byte) 114), 111}, new short[]{40, 30, Short.valueOf((short) 10)});
+                new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         new ReflectionAssert().assertReflectionEquals(animal, animal2);
     }
 
     @Test
     public void possibleToCompareObjectsWithProtectedFields() {
         Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new float[]{Float.valueOf(10.10f), Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
+                new Float[]{10.10f, Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
                 new double[]{Double.POSITIVE_INFINITY, 100000d,
-                        Double.NEGATIVE_INFINITY, 400000d, Double.valueOf(90000d), Double.NaN});
+                        Double.NEGATIVE_INFINITY, 400000d, 90000d, Double.NaN});
         Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new float[]{Float.valueOf(10.10f), Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
+                new Float[]{10.10f, Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
                 new double[]{Double.POSITIVE_INFINITY, 100000d,
-                        Double.NEGATIVE_INFINITY, 400000d, Double.valueOf(90000d), Double.NaN});
+                        Double.NEGATIVE_INFINITY, 400000d, 90000d, Double.NaN});
         new ReflectionAssert().assertReflectionEquals(plant, plant2);
     }
 
     @Test
     public void objectsAreEqualIfArrayFieldsAreEmpty() {
         Person person = new Person(150245871L, (short) 25, Double.NEGATIVE_INFINITY, 164, (byte) 0b10,
-                Float.NEGATIVE_INFINITY, new int[]{}, new long[]{});
+                Float.NEGATIVE_INFINITY, new Integer[]{}, new long[]{});
         Person person2 = new Person(150245871L, (short) 25, Double.NEGATIVE_INFINITY, 164, (byte) 0b10,
-                Float.NEGATIVE_INFINITY, new int[]{}, new long[]{});
+                Float.NEGATIVE_INFINITY, new Integer[]{}, new long[]{});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
     @Test
     public void objectsAreEqualIfFieldsWithDifferentValuesWereExcluded() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, Float.NaN,
-                new int[]{5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, Float.NaN,
-                new int[]{5, -10, 897, 0, 7}, new long[]{2, 17, 35, 150, 18});
+                new Integer[]{5, -10, 897, 0, 7}, new long[]{2, 17, 35, 150, 18});
         new ReflectionAssert().excludeFields("id", "longArray").assertReflectionEquals(person, person2);
     }
 
     @Test
     public void objectsAreEqualIfAllFieldsWereExcluded() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245872L, (short) 26, 50.1008d, 165, (byte) 0b11, 70f,
-                new int[]{6, 111, 898, 1, 8}, new long[]{2, 17, 35, 150, 18});
+                new Integer[]{6, 111, 898, 1, 8}, new long[]{2, 17, 35, 150, 18});
         new ReflectionAssert().
                 excludeFields("id", "age", "weight", "height", "shoeSize", "waist", "intArray", "longArray").
                 assertReflectionEquals(person, person2);
@@ -97,7 +96,7 @@ public class ReflectionAssertTest {
     public void objectsAreNotEqualIfExpectedObjectIsNull() {
         Person person = null;
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Objects are not equal since one of them is null", e.getMessage());
@@ -106,7 +105,7 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfActualObjectIsNull() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = null;
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
@@ -116,8 +115,8 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfTheirClassesAreDifferent() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
-        Animal animal = new Animal(150245871L, (short) 25, 50.1007d, 164, new byte[]{112, 114, 111},
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+        Animal animal = new Animal(150245871L, (short) 25, 50.1007d, 164, new Byte[]{112, 114, 111},
                 new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, animal));
@@ -128,9 +127,9 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfAllOfTheirPropertyValuesAreDifferent() {
         Person person = new Person(150245872L, (short) 30, 55.1007d, 170, (byte) 0b0111_1111, 100f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{0, 0, 0, 0, 0}, new long[]{2, 17, 35, 150, 18});
+                new Integer[]{0, 0, 0, 0, 0}, new long[]{2, 17, 35, 150, 18});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.id is 150245872, actual: Person.id is 150245871\n" +
@@ -146,22 +145,21 @@ public class ReflectionAssertTest {
     @Test
     public void throwsIllegalArgumentExceptionIfSpecifiedFieldIsNotPropertyOfSpecifiedObject() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new ReflectionAssert().
                 excludeFields("id", "test").
                 assertReflectionEquals(person, person2));
-        assertEquals("test field is not field of specified object",
-                "test field is not field of specified object");
+        assertEquals("test is not field of specified object", e.getMessage());
     }
 
     @Test
     public void objectsAreNotEqualIfCountOfValuesInArrayIsDifferent() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 1, 100});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 1, 100});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.longArray is [1, 16, 34], " +
@@ -171,9 +169,9 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfOneOfArrayFieldIsEmpty() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1, 100});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1, 100});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.longArray is [], " +
@@ -183,9 +181,9 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfArrayFieldOfActualObjectIsNull() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1});
+                new Integer[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{5, 10, 897, 0, 7}, null);
+                new Integer[]{5, 10, 897, 0, 7}, null);
         AssertionError e = assertThrows(AssertionError.class, () -> new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.longArray is [16, 34, 17, 149, 1], " +
                 "actual: Person.longArray is null\n", e.getMessage());
@@ -194,9 +192,9 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfArrayFieldOfExpectedObjectIsNull() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-5, -10, -897, -14, -7}, null);
+                new Integer[]{-5, -10, -897, -14, -7}, null);
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
+                new Integer[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.longArray is null, " +
@@ -206,9 +204,9 @@ public class ReflectionAssertTest {
     @Test
     public void objectsAreNotEqualIfArrayWasNotSorted() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
+                new Integer[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-10, -897, -7, -5, -14}, new long[]{34, 149, 34, 1, 17});
+                new Integer[]{-10, -897, -7, -5, -14}, new long[]{34, 149, 34, 1, 17});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.intArray is [-5, -10, -897, -14, -7], " +

@@ -7,10 +7,10 @@ public class Person {
     int height;
     byte shoeSize;
     float waist;
-    int[] intArray;
+    Integer[] intArray;
     long[] longArray;
 
-    public Person(long id, short age, double weight, int height, byte shoeSize, float waist, int[] intArray, long[] longArray) {
+    public Person(long id, short age, double weight, int height, byte shoeSize, float waist, Integer[] intArray, long[] longArray) {
         this.id = id;
         this.age = age;
         this.weight = weight;

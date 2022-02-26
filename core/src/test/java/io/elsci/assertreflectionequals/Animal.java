@@ -5,10 +5,10 @@ public class Animal {
     private short age;
     private double weight;
     private int height;
-    private byte[] byteArray;
+    private Byte[] byteArray;
     private short[] shortArray;
 
-    public Animal(long id, short age, double weight, int height, byte[] byteArray, short[] shortArray) {
+    public Animal(long id, short age, double weight, int height, Byte[] byteArray, short[] shortArray) {
       this.id = id;
       this.age = age;
       this.weight = weight;

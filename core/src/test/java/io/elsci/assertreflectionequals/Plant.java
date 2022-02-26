@@ -6,10 +6,10 @@ public class Plant {
     protected int height;
     protected boolean isFlowering;
     protected char letter;
-    protected float[] floatArray;
+    protected Float[] floatArray;
     protected double[] doubleArray;
 
-    public Plant(long id, short age, int height, boolean isFlowering, char letter, float[] floatArray, double[] doubleArray) {
+    public Plant(long id, short age, int height, boolean isFlowering, char letter, Float[] floatArray, double[] doubleArray) {
         this.id = id;
         this.age = age;
         this.height = height;
