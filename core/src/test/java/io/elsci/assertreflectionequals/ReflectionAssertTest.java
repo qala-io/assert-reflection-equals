@@ -12,10 +12,10 @@ import static org.junit.Assert.assertThrows;
 public class ReflectionAssertTest {
     @Test
     public void objectsAreEqualIfAllValuesOfTheirPropertiesAreEqual() {
-        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
-        Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{-5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+        Person person = new Person(150245871L, (short) 25, Double.NaN, 164, (byte) 0b10, 69f,
+                new int[]{Integer.valueOf(-5), -10, 897, 0}, new long[]{Long.valueOf(1), 16, 34, 149, 17});
+        Person person2 = new Person(150245871L, (short) 25, Double.NaN, 164, (byte) 0b10, 69f,
+                new int[]{Integer.valueOf(-5), -10, 897, 0, Integer.valueOf(7)}, new long[]{Long.valueOf(1), 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
@@ -36,35 +36,39 @@ public class ReflectionAssertTest {
     @Test
     public void possibleToCompareObjectsWithPrivateFields() {
         Animal animal = new Animal(150245871L, (short) 25, 50.1007d, 164,
-                new byte[]{112, 114, 111}, new short[]{40, 30, 10});
+                new byte[]{112, Byte.valueOf((byte) 114), 111}, new short[]{40, 30, Short.valueOf((short) 10)});
         Animal animal2 = new Animal(150245871L, (short) 25, 50.1007d, 164,
-                new byte[]{112, 114, 111}, new short[]{40, 30, 10});
+                new byte[]{112, Byte.valueOf((byte) 114), 111}, new short[]{40, 30, Short.valueOf((short) 10)});
         new ReflectionAssert().assertReflectionEquals(animal, animal2);
     }
 
     @Test
     public void possibleToCompareObjectsWithProtectedFields() {
         Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new float[]{10.10f, 80.50f, 40.60f}, new double[]{100000d, 400000d, 90000d});
+                new float[]{Float.valueOf(10.10f), Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
+                new double[]{Double.POSITIVE_INFINITY, 100000d,
+                        Double.NEGATIVE_INFINITY, 400000d, Double.valueOf(90000d), Double.NaN});
         Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new float[]{10.10f, 80.50f, 40.60f}, new double[]{100000d, 400000d, 90000d});
+                new float[]{Float.valueOf(10.10f), Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
+                new double[]{Double.POSITIVE_INFINITY, 100000d,
+                        Double.NEGATIVE_INFINITY, 400000d, Double.valueOf(90000d), Double.NaN});
         new ReflectionAssert().assertReflectionEquals(plant, plant2);
     }
 
     @Test
     public void objectsAreEqualIfArrayFieldsAreEmpty() {
-        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{}, new long[]{});
-        Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                new int[]{}, new long[]{});
+        Person person = new Person(150245871L, (short) 25, Double.NEGATIVE_INFINITY, 164, (byte) 0b10,
+                Float.NEGATIVE_INFINITY, new int[]{}, new long[]{});
+        Person person2 = new Person(150245871L, (short) 25, Double.NEGATIVE_INFINITY, 164, (byte) 0b10,
+                Float.NEGATIVE_INFINITY, new int[]{}, new long[]{});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
     @Test
     public void objectsAreEqualIfFieldsWithDifferentValuesWereExcluded() {
-        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f,
+        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, Float.NaN,
                 new int[]{5, -10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
-        Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 70f,
+        Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, Float.NaN,
                 new int[]{5, -10, 897, 0, 7}, new long[]{2, 17, 35, 150, 18});
         new ReflectionAssert().excludeFields("id", "longArray").assertReflectionEquals(person, person2);
     }
@@ -82,10 +86,10 @@ public class ReflectionAssertTest {
 
     @Test
     public void objectsAreEqualIfBothArrayFieldsAreNull() {
-        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                null, new long[]{1, 16, 34, 149, 17});
-        Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
-                null, new long[]{1, 16, 34, 149, 17});
+        Person person = new Person(150245871L, (short) 25, Double.POSITIVE_INFINITY, 164, (byte) 0b10,
+                Float.POSITIVE_INFINITY, null, new long[]{1, 16, 34, 149, 17});
+        Person person2 = new Person(150245871L, (short) 25, Double.POSITIVE_INFINITY, 164, (byte) 0b10,
+                Float.POSITIVE_INFINITY, null, new long[]{1, 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person2);
     }
 
@@ -197,6 +201,19 @@ public class ReflectionAssertTest {
                 new ReflectionAssert().assertReflectionEquals(person, person2));
         assertEquals("Expected: Person.longArray is null, " +
                 "actual: Person.longArray is [16, 34, 17, 149, 1]\n", e.getMessage());
+    }
+
+    @Test
+    public void objectsAreNotEqualIfArrayWasNotSorted() {
+        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
+                new int[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
+        Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
+                new int[]{-10, -897, -7, -5, -14}, new long[]{34, 149, 34, 1, 17});
+        AssertionError e = assertThrows(AssertionError.class, () ->
+                new ReflectionAssert().assertReflectionEquals(person, person2));
+        assertEquals("Expected: Person.intArray is [-5, -10, -897, -14, -7], " +
+                "actual: Person.intArray is [-10, -897, -7, -5, -14]\n" + "Expected: Person.longArray is [16, 34, 17, 149, 1], " +
+                "actual: Person.longArray is [34, 149, 34, 1, 17]\n", e.getMessage());
     }
 
     @Test
