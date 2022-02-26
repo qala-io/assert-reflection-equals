@@ -45,12 +45,10 @@ public class ReflectionAssertTest {
     public void possibleToCompareObjectsWithProtectedFields() {
         Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
                 new Float[]{10.10f, Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
-                new double[]{Double.POSITIVE_INFINITY, 100000d,
-                        Double.NEGATIVE_INFINITY, 400000d, 90000d, Double.NaN});
+                new double[]{Double.POSITIVE_INFINITY, 100000d, Double.NEGATIVE_INFINITY, 400000d, 90000d, Double.NaN});
         Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
                 new Float[]{10.10f, Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY},
-                new double[]{Double.POSITIVE_INFINITY, 100000d,
-                        Double.NEGATIVE_INFINITY, 400000d, 90000d, Double.NaN});
+                new double[]{Double.POSITIVE_INFINITY, 100000d, Double.NEGATIVE_INFINITY, 400000d, 90000d, Double.NaN});
         new ReflectionAssert().assertReflectionEquals(plant, plant2);
     }
 
@@ -90,6 +88,28 @@ public class ReflectionAssertTest {
         Person person2 = new Person(150245871L, (short) 25, Double.POSITIVE_INFINITY, 164, (byte) 0b10,
                 Float.POSITIVE_INFINITY, null, new long[]{1, 16, 34, 149, 17});
         new ReflectionAssert().assertReflectionEquals(person, person2);
+    }
+
+    @Test
+    public void objectsAreEqualIfArraysWereSorted() {
+        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
+                new Float[]{10.10f, Float.NaN, 40.60f, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, 0.0f},
+                new double[]{0.0d, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, -100000d, Double.NEGATIVE_INFINITY, 90000d, Double.NaN});
+        Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
+                new Float[]{Float.NEGATIVE_INFINITY, 40.60f, 10.10f, Float.NaN, Float.POSITIVE_INFINITY, 0.0f},
+                new double[]{Double.POSITIVE_INFINITY, -100000d, 0.0d, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, 90000d, Double.NaN});
+        new ReflectionAssert().withLenientOrder().assertReflectionEquals(plant, plant2);
+    }
+
+    @Test
+    public void objectsAreEqualIfElementsInArrayAreLocatedInNaturalOrderAndArraysWereSortedAnyway() {
+        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
+                new Float[]{Float.NEGATIVE_INFINITY, -10.10f, 0.0f, 40.60f, Float.POSITIVE_INFINITY, Float.NaN},
+                new double[]{Double.NEGATIVE_INFINITY, -100000d, 0.0d, 90000d, Double.POSITIVE_INFINITY, Double.NaN});
+        Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
+                new Float[]{Float.NEGATIVE_INFINITY, -10.10f, 0.0f, 40.60f, Float.POSITIVE_INFINITY, Float.NaN},
+                new double[]{Double.NEGATIVE_INFINITY, -100000d, 0.0d, 90000d, Double.POSITIVE_INFINITY, Double.NaN});
+        new ReflectionAssert().withLenientOrder().assertReflectionEquals(plant, plant2);
     }
 
     @Test
@@ -155,7 +175,7 @@ public class ReflectionAssertTest {
     }
 
     @Test
-    public void objectsAreNotEqualIfCountOfValuesInArrayIsDifferent() {
+    public void objectsAreNotEqualIfCountOfValuesInArraysIsDifferent() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
@@ -202,7 +222,7 @@ public class ReflectionAssertTest {
     }
 
     @Test
-    public void objectsAreNotEqualIfArrayWasNotSorted() {
+    public void objectsAreNotEqualIfElementsInArrayAreNotLocatedInNaturalOrderAndArraysWereNotSorted() {
         Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 new Integer[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
         Person person2 = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,

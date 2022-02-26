@@ -6,6 +6,7 @@ import java.util.*;
 
 public class ReflectionAssert {
     private final Set<String> excludedFields = new HashSet<>();
+    private boolean sortArray = false;
 
     public void assertReflectionEquals(Object expected, Object actual) {
         if(expected == null && actual == null) {
@@ -41,6 +42,11 @@ public class ReflectionAssert {
 
     public ReflectionAssert excludeFields(String ... fieldNames) {
         excludedFields.addAll(Arrays.asList(fieldNames));
+        return this;
+    }
+
+    public ReflectionAssert withLenientOrder() {
+        sortArray = true;
         return this;
     }
 
@@ -107,6 +113,10 @@ public class ReflectionAssert {
         Object[] actualArray = getArrayWithValues(actual);
         if(expectedArray.length != actualArray.length) {
             return false;
+        }
+        if (sortArray) {
+            Arrays.sort(expectedArray);
+            Arrays.sort(actualArray);
         }
         for(int i = 0; i < expectedArray.length; i++) {
             Object exp = expectedArray[i];
