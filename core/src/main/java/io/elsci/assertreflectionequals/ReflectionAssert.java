@@ -1,5 +1,6 @@
 package io.elsci.assertreflectionequals;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -24,12 +25,12 @@ public class ReflectionAssert {
         Field[] fields = getProperFields(expectedClass.getDeclaredFields());
         for(Field field : fields) {
             field.setAccessible(true);
-            try {
-                if(!field.get(expected).equals(field.get(actual))) {
-                    buildErrorMessage(field.get(expected), field.getName(), field.get(actual), field.getName(), errorMessage);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+            if(field.getType().isPrimitive()) {
+                assertPrimitivesEqual(expectedClass, field, expected, actual, errorMessage);
+            } else if(field.getType().isArray()) {
+                assertArrayEqual(expectedClass, field, expected, actual, errorMessage);
+            } else {
+                throw new UnsupportedOperationException("This operation is not supported yet");
             }
         }
 
@@ -73,10 +74,68 @@ public class ReflectionAssert {
         }
     }
 
-    private void buildErrorMessage(Object expectedValue, String expectedName,
+    private void assertPrimitivesEqual(Class<?> clazz, Field field, Object expected, Object actual, StringBuilder errorMessage) {
+        try {
+            if (!field.get(expected).equals(field.get(actual))) {
+                buildErrorMessage(clazz, field.get(expected), field.getName(), field.get(actual), field.getName(), errorMessage);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void assertArrayEqual(Class<?> clazz, Field field, Object expected, Object actual, StringBuilder errorMessage) {
+        try {
+            if (!compareArrays(field.get(expected), field.get(actual))) {
+                buildErrorMessage(clazz, Arrays.toString(getArrayWithValues(field.get(expected))), field.getName(),
+                        Arrays.toString(getArrayWithValues(field.get(actual))), field.getName(), errorMessage);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Compare arrays with primitives
+    private boolean compareArrays(Object expected, Object actual) {
+        if(expected == null && actual == null) {
+            return true;
+        }
+        if(expected == null || actual == null) {
+            return false;
+        }
+        Object[] expectedArray = getArrayWithValues(expected);
+        Object[] actualArray = getArrayWithValues(actual);
+        if(expectedArray.length != actualArray.length) {
+            return false;
+        }
+        for(int i = 0; i < expectedArray.length; i++) {
+            Object exp = expectedArray[i];
+            Object act = actualArray[i];
+            if (!(Objects.equals(exp, act))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Get array with primitives
+    private Object[] getArrayWithValues(Object o) {
+        if(o == null) {
+            return null;
+        }
+        Object[] elements = new Object[Array.getLength(o)];
+        for(int i = 0; i < Array.getLength(elements); i++) {
+            Object element = Array.get(o, i);
+            elements[i] = element;
+        }
+        return elements;
+    }
+
+    private void buildErrorMessage(Class<?> clazz, Object expectedValue, String expectedName,
                                           Object actualValue, String actualName, StringBuilder errorMessage) {
-        errorMessage.append("The ").append(expectedName).append(" of expected object is ").append(expectedValue).
-                append(", but actual ").append(actualName).append(" is ").append(actualValue).append("\n");
+        errorMessage.append("Expected: ").append(clazz.getSimpleName()).append(".").append(expectedName).
+                append(" is ").append(expectedValue).append(", actual: ").append(clazz.getSimpleName()).
+                append(".").append(actualName).append(" is ").append(actualValue).append("\n");
     }
 
     private void throwAssertionError(String message) {
