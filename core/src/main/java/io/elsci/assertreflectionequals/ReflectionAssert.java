@@ -1,43 +1,14 @@
 package io.elsci.assertreflectionequals;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class ReflectionAssert {
     private final Set<String> excludedFields = new HashSet<>();
-    private boolean sortArray = false;
+    private boolean lenientOrder = false;
 
-    public void assertReflectionEquals(Object expected, Object actual) {
-        if(expected == null && actual == null) {
-            return;
-        }
-        if(expected == null || actual == null) {
-            throwAssertionError("Objects are not equal since one of them is null");
-        }
-        StringBuilder errorMessage = new StringBuilder();
-
-        Class<?> expectedClass = expected.getClass();
-        Class<?> actualClass = actual.getClass();
-        if(expectedClass != actualClass) {
-            throwAssertionError("Expected " + expectedClass + ", but actual " + actualClass);
-        }
-
-        Field[] fields = getProperFields(expectedClass.getDeclaredFields());
-        for(Field field : fields) {
-            field.setAccessible(true);
-            if(field.getType().isPrimitive()) {
-                assertPrimitivesEqual(expectedClass, field, expected, actual, errorMessage);
-            } else if(field.getType().isArray()) {
-                assertArrayEqual(expectedClass, field, expected, actual, errorMessage);
-            } else {
-                throw new UnsupportedOperationException("This operation is not supported yet");
-            }
-        }
-
-        if(errorMessage.length() != 0) {
-            throwAssertionError(errorMessage.toString());
-        }
+    public void assertReflectionEquals(Object expectedObject, Object actualObject) {
+        assertReflectionEquals(new ArrayDeque<>(), expectedObject, actualObject);
     }
 
     public ReflectionAssert excludeFields(String ... fieldNames) {
@@ -46,8 +17,49 @@ public class ReflectionAssert {
     }
 
     public ReflectionAssert withLenientOrder() {
-        sortArray = true;
+        lenientOrder = true;
         return this;
+    }
+
+    private void assertReflectionEquals(Deque<Class<?>> listOfClasses, Object expectedObject, Object actualObject) {
+        StringBuilder errorMessage = new StringBuilder();
+
+        if (expectedObject == null && actualObject == null) {
+            return;
+        } else if (expectedObject == null) {
+            listOfClasses.push(actualObject.getClass());
+            BuildErrorMessage.build(listOfClasses, expectedObject, "", actualObject.getClass(),
+                    errorMessage);
+        } else if (actualObject == null) {
+            listOfClasses.push(expectedObject.getClass());
+            BuildErrorMessage.build(listOfClasses, expectedObject.getClass(), "", actualObject,
+                    errorMessage);
+        } else if (expectedObject.getClass() != actualObject.getClass()) {
+            listOfClasses.push(expectedObject.getClass());
+            listOfClasses.push(actualObject.getClass());
+            BuildErrorMessage.build(listOfClasses, expectedObject.getClass(), "", actualObject.getClass(),
+                    errorMessage);
+        } else {
+            Class<?> expectedClass = expectedObject.getClass();
+            listOfClasses.push(expectedClass);
+
+            Field[] fields = getProperFields(expectedClass.getDeclaredFields());
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if (field.getType().isPrimitive()) {
+                    errorMessage = new ReflectionAssertEqualsPrimitives(listOfClasses, field, expectedObject,
+                            actualObject, errorMessage).compare();
+                } else if (field.getType().isArray()) {
+                    errorMessage = new ReflectionAssertEqualsArrays(listOfClasses, lenientOrder, field, expectedObject,
+                            actualObject, errorMessage).compare();
+                } else {
+                    assertReferencesEqual(listOfClasses, field, expectedObject, actualObject);
+                }
+            }
+        }
+        if (errorMessage.length() != 0) {
+            throwAssertionError(errorMessage.toString());
+        }
     }
 
     // Get proper array of fields in case some fields were excluded
@@ -80,72 +92,13 @@ public class ReflectionAssert {
         }
     }
 
-    private void assertPrimitivesEqual(Class<?> clazz, Field field, Object expected, Object actual, StringBuilder errorMessage) {
+    private void assertReferencesEqual(Deque<Class<?>> listOfClasses, Field expectedField, Object expected, Object actual) {
         try {
-            if (!field.get(expected).equals(field.get(actual))) {
-                buildErrorMessage(clazz, field.get(expected), field.getName(), field.get(actual), field.getName(), errorMessage);
-            }
+            assertReflectionEquals(listOfClasses, expectedField.get(expected), expectedField.get(actual));
+            listOfClasses.pop();
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void assertArrayEqual(Class<?> clazz, Field field, Object expected, Object actual, StringBuilder errorMessage) {
-        try {
-            if (!compareArrays(field.get(expected), field.get(actual))) {
-                buildErrorMessage(clazz, Arrays.toString(getArrayWithValues(field.get(expected))), field.getName(),
-                        Arrays.toString(getArrayWithValues(field.get(actual))), field.getName(), errorMessage);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Compare arrays with primitives
-    private boolean compareArrays(Object expected, Object actual) {
-        if(expected == null && actual == null) {
-            return true;
-        }
-        if(expected == null || actual == null) {
-            return false;
-        }
-        Object[] expectedArray = getArrayWithValues(expected);
-        Object[] actualArray = getArrayWithValues(actual);
-        if(expectedArray.length != actualArray.length) {
-            return false;
-        }
-        if (sortArray) {
-            Arrays.sort(expectedArray);
-            Arrays.sort(actualArray);
-        }
-        for(int i = 0; i < expectedArray.length; i++) {
-            Object exp = expectedArray[i];
-            Object act = actualArray[i];
-            if (!(Objects.equals(exp, act))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Get array with primitives
-    private Object[] getArrayWithValues(Object o) {
-        if(o == null) {
-            return null;
-        }
-        Object[] elements = new Object[Array.getLength(o)];
-        for(int i = 0; i < Array.getLength(elements); i++) {
-            Object element = Array.get(o, i);
-            elements[i] = element;
-        }
-        return elements;
-    }
-
-    private void buildErrorMessage(Class<?> clazz, Object expectedValue, String expectedName,
-                                          Object actualValue, String actualName, StringBuilder errorMessage) {
-        errorMessage.append("Expected: ").append(clazz.getSimpleName()).append(".").append(expectedName).
-                append(" is ").append(expectedValue).append(", actual: ").append(clazz.getSimpleName()).
-                append(".").append(actualName).append(" is ").append(actualValue).append("\n");
     }
 
     private void throwAssertionError(String message) {
