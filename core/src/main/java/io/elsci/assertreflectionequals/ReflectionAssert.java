@@ -21,39 +21,37 @@ public class ReflectionAssert {
         return this;
     }
 
-    private void assertReflectionEquals(Deque<Class<?>> listOfClasses, Object expectedObject, Object actualObject) {
+    private void assertReflectionEquals(Deque<Class<?>> fullPath, Object expectedObject, Object actualObject) {
         StringBuilder errorMessage = new StringBuilder();
 
-        if (expectedObject == null && actualObject == null) {
+        if (expectedObject == actualObject) {
             return;
-        } else if (expectedObject == null) {
-            listOfClasses.push(actualObject.getClass());
-            BuildErrorMessage.build(listOfClasses, expectedObject, "", actualObject.getClass(),
-                    errorMessage);
+        }
+        if (expectedObject == null) {
+            fullPath.push(actualObject.getClass());
+            BuildErrorMessage.build(fullPath, expectedObject, "", actualObject, errorMessage);
         } else if (actualObject == null) {
-            listOfClasses.push(expectedObject.getClass());
-            BuildErrorMessage.build(listOfClasses, expectedObject.getClass(), "", actualObject,
-                    errorMessage);
+            fullPath.push(expectedObject.getClass());
+            BuildErrorMessage.build(fullPath, expectedObject.toString(), "", actualObject, errorMessage);
         } else if (expectedObject.getClass() != actualObject.getClass()) {
-            listOfClasses.push(expectedObject.getClass());
-            listOfClasses.push(actualObject.getClass());
-            BuildErrorMessage.build(listOfClasses, expectedObject.getClass(), "", actualObject.getClass(),
-                    errorMessage);
+            fullPath.push(expectedObject.getClass());
+            fullPath.push(actualObject.getClass());
+            BuildErrorMessage.build(fullPath, expectedObject.getClass(), "", actualObject.getClass(), errorMessage);
         } else {
             Class<?> expectedClass = expectedObject.getClass();
-            listOfClasses.push(expectedClass);
+            fullPath.push(expectedClass);
 
             Field[] fields = getProperFields(expectedClass.getDeclaredFields());
             for (Field field : fields) {
                 field.setAccessible(true);
                 if (field.getType().isPrimitive()) {
-                    errorMessage = new ReflectionAssertEqualsPrimitives(listOfClasses, field, expectedObject,
-                            actualObject, errorMessage).compare();
+                    errorMessage = new ReflectionAssertEqualsPrimitives(fullPath, field).
+                            assertEquals(expectedObject, actualObject, errorMessage);
                 } else if (field.getType().isArray()) {
-                    errorMessage = new ReflectionAssertEqualsArrays(listOfClasses, lenientOrder, field, expectedObject,
-                            actualObject, errorMessage).compare();
+                    errorMessage = new ReflectionAssertEqualsArrays(fullPath, field, lenientOrder).
+                            assertEquals(expectedObject, actualObject, errorMessage);
                 } else {
-                    assertReferencesEqual(listOfClasses, field, expectedObject, actualObject);
+                    assertReferencesEqual(fullPath, field, expectedObject, actualObject);
                 }
             }
         }
@@ -64,14 +62,14 @@ public class ReflectionAssert {
 
     // Get proper array of fields in case some fields were excluded
     private Field[] getProperFields(Field[] objectFields) {
-        if(excludedFields.isEmpty()) {
+        if (excludedFields.isEmpty()) {
             return objectFields;
         }
         verifyExcludedFields(excludedFields, objectFields);
         ArrayList<Field> fields = new ArrayList<>();
-        for(Field objectField : objectFields) {
+        for (Field objectField : objectFields) {
             objectField.setAccessible(true);
-            if(!excludedFields.contains(objectField.getName())) {
+            if (!excludedFields.contains(objectField.getName())) {
                 fields.add(objectField);
             }
         }
@@ -81,24 +79,22 @@ public class ReflectionAssert {
     // Verify if excluded field name belongs to the specified object
     private void verifyExcludedFields(Set<String> excludedFields, Field[] objectFields) {
         ArrayList<String> fields = new ArrayList<>();
-        for(Field objectField : objectFields) {
+        for (Field objectField : objectFields) {
             objectField.setAccessible(true);
             fields.add(objectField.getName());
         }
-        for(String name : excludedFields) {
-            if(!fields.contains(name)) {
+        for (String name : excludedFields) {
+            if (!fields.contains(name)) {
                 throw new IllegalArgumentException(name + " is not field of specified object");
             }
         }
     }
 
-    private void assertReferencesEqual(Deque<Class<?>> listOfClasses, Field expectedField, Object expected, Object actual) {
-        try {
-            assertReflectionEquals(listOfClasses, expectedField.get(expected), expectedField.get(actual));
-            listOfClasses.pop();
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    private void assertReferencesEqual(Deque<Class<?>> fullPath, Field expectedField,
+                                       Object expectedObject, Object actualObject) {
+        assertReflectionEquals(fullPath, ReflectionUtil.get(expectedField, expectedObject),
+                ReflectionUtil.get(expectedField, actualObject));
+        fullPath.pop();
     }
 
     private void throwAssertionError(String message) {

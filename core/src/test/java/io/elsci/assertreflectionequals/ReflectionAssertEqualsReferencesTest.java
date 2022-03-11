@@ -2,8 +2,7 @@ package io.elsci.assertreflectionequals;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class ReflectionAssertEqualsReferencesTest {
     @Test
@@ -38,9 +37,9 @@ public class ReflectionAssertEqualsReferencesTest {
         Insect insect2 = new Insect(0, plant2, 40.60f);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.Plant.\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Plant.\n" +
                 "Expected: null\n" +
-                "Actual: class io.elsci.assertreflectionequals.Plant\n", e.getMessage());
+                "Actual: io.elsci.assertreflectionequals.Plant@"));
     }
 
     @Test
@@ -53,9 +52,8 @@ public class ReflectionAssertEqualsReferencesTest {
         Insect insect2 = new Insect(0, plant2, 40.60f);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.Plant.\n" +
-                "Expected: class io.elsci.assertreflectionequals.Plant\n" +
-                "Actual: null\n", e.getMessage());
+        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Plant.\n" +
+                "Expected: io.elsci.assertreflectionequals.Plant@"));
     }
 
     @Test

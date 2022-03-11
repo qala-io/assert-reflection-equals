@@ -3,30 +3,19 @@ package io.elsci.assertreflectionequals;
 import java.lang.reflect.Field;
 import java.util.Deque;
 
-public class ReflectionAssertEqualsPrimitives {
-    private final Deque<Class<?>> listOfClasses;
+class ReflectionAssertEqualsPrimitives {
+    private final Deque<Class<?>> fullPath;
     private final Field field;
-    private final Object expectedObject;
-    private final Object actualObject;
-    private final StringBuilder errorMessage;
 
-    public ReflectionAssertEqualsPrimitives(Deque<Class<?>> listOfClasses, Field field, Object expectedObject,
-                                            Object actualObject, StringBuilder errorMessage) {
-        this.listOfClasses = listOfClasses;
+    public ReflectionAssertEqualsPrimitives(Deque<Class<?>> fullPath, Field field) {
+        this.fullPath = fullPath;
         this.field = field;
-        this.expectedObject = expectedObject;
-        this.actualObject = actualObject;
-        this.errorMessage = errorMessage;
     }
 
-    public StringBuilder compare() {
-        try {
-            if (!field.get(expectedObject).equals(field.get(actualObject))) {
-                return BuildErrorMessage.build(listOfClasses, field.get(expectedObject), field.getName(),
-                        field.get(actualObject), errorMessage);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+    public StringBuilder assertEquals(Object expectedObject, Object actualObject, StringBuilder errorMessage) {
+        if (!ReflectionUtil.get(field, expectedObject).equals(ReflectionUtil.get(field, actualObject))) {
+            return BuildErrorMessage.build(fullPath, ReflectionUtil.get(field, expectedObject), field.getName(),
+                    ReflectionUtil.get(field, actualObject), errorMessage);
         }
         return errorMessage;
     }

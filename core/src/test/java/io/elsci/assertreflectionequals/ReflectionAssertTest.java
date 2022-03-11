@@ -5,8 +5,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class ReflectionAssertTest {
     @Test
@@ -50,9 +49,9 @@ public class ReflectionAssertTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.\n" +
-                "Expected: null\n" +
-                "Actual: class io.elsci.assertreflectionequals.Person\n", e.getMessage());
+        assertTrue(e.getMessage().startsWith("Values were different for: Person.\n" +
+                        "Expected: null\n" +
+                        "Actual: io.elsci.assertreflectionequals.Person@"));
     }
 
     @Test
@@ -62,9 +61,8 @@ public class ReflectionAssertTest {
         Person person2 = null;
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.\n" +
-                "Expected: class io.elsci.assertreflectionequals.Person\n" +
-                "Actual: null\n", e.getMessage());
+        assertTrue(e.getMessage().startsWith("Values were different for: Person.\n" +
+                "Expected: io.elsci.assertreflectionequals.Person@"));
     }
 
     @Test
