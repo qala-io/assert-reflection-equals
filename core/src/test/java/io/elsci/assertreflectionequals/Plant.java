@@ -11,7 +11,6 @@ public class Plant {
     protected Character[] charArray;
     protected boolean[] booleanArray;
 
-
     public Plant(long id, short age, int height, boolean isFlowering, char letter, Float[] floatArray,
                  double[] doubleArray, Character[] charArray, boolean[] booleanArray) {
         this.id = id;

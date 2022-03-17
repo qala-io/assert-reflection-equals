@@ -7,98 +7,184 @@ import static org.junit.Assert.*;
 public class ReflectionAssertEqualsReferencesTest {
     @Test
     public void objectsAreEqualIfInternalObjectsAreNull() {
-        Plant plant = null;
-        Plant plant2 = null;
-        Insect insect = new Insect(0, plant, 40.60f);
-        Insect insect2 = new Insect(0, plant2, 40.60f);
+        Bacteria bacteria = null;
+        Bacteria bacteria2 = null;
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
         new ReflectionAssert().assertReflectionEquals(insect, insect2);
     }
 
     @Test
-    public void objectsAreEqualIfInternalObjectFieldsWithDifferentValuesWereExcluded() {
-        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Plant plant2 = new Plant(150245872L, (short) 4, 51, false, 'b',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Insect insect = new Insect(0, plant, 40.60f);
-        Insect insect2 = new Insect(0, plant2, 40.60f);
-        new ReflectionAssert().excludeFields("plant").assertReflectionEquals(insect, insect2);
+    public void objectsAreEqualIfInternalObjectsAreTheSameObject() {
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria);
+        new ReflectionAssert().assertReflectionEquals(insect, insect2);
+    }
+
+    @Test
+    public void objectsAreEqualIfInternalObjectsWithDifferentValuesWereExcluded() {
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = new Bacteria(2, 2.16f);
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+        new ReflectionAssert().excludeFields("bacteria").assertReflectionEquals(insect, insect2);
+    }
+
+    @Test
+    public void noInfiniteLoopIfObjectAndItsInternalObjectHaveBidectionalRelationship() {
+        Bacteria bacteria = new Bacteria(1, 1.88f);
+        Bacteria bacteria2 = new Bacteria(1, 1.88f);
+
+        Insect insect = new Insect(0, 1.55f);
+        Insect insect2 = new Insect(0, 1.55f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+
+        bacteria.setInsect(insect);
+        bacteria2.setInsect(insect2);
+        new ReflectionAssert().assertReflectionEquals(insect, insect2);
+    }
+
+    @Test
+    public void objectsAreEqualIfInternalObjectsAreEqualRecursively() {
+        Bacteria bacteria = new Bacteria(1, 1.88f);
+        Bacteria bacteria2 = new Bacteria(1, 1.88f);
+
+        Insect insect = new Insect(0, 1.55f);
+        Insect insect2 = new Insect(0, 1.55f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+
+        Insect insect3 = new Insect(2, 5.55f);
+        Insect insect4 = new Insect(2, 5.55f);
+        bacteria.setInsect(insect3);
+        bacteria2.setInsect(insect4);
+        new ReflectionAssert().assertReflectionEquals(insect, insect2);
     }
 
     @Test
     public void objectsAreNotEqualIfInternalObjectOfExpectedObjectIsNull() {
-        Plant plant = null;
-        Plant plant2 = new Plant(150245872L, (short) 4, 51, false, 'b',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Insect insect = new Insect(0, plant, 40.60f);
-        Insect insect2 = new Insect(0, plant2, 40.60f);
+        Bacteria bacteria = null;
+        Bacteria bacteria2 = new Bacteria(2, 2.16f);
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Plant.\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria.\n" +
                 "Expected: null\n" +
-                "Actual: io.elsci.assertreflectionequals.Plant@"));
+                "Actual: io.elsci.assertreflectionequals.Bacteria@"));
     }
 
     @Test
     public void objectsAreNotEqualIfInternalObjectOfActualObjectIsNull() {
-        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Plant plant2 = null;
-        Insect insect = new Insect(0, plant, 40.60f);
-        Insect insect2 = new Insect(0, plant2, 40.60f);
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = null;
+
+        Insect insect = new Insect(0,40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Plant.\n" +
-                "Expected: io.elsci.assertreflectionequals.Plant@"));
+        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria.\n" +
+                "Expected: io.elsci.assertreflectionequals.Bacteria@"));
     }
 
     @Test
     public void objectsAreNotEqualIfTheirInternalObjectsAreNotEqual() {
-        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Plant plant2 = new Plant(150245872L, (short) 4, 51, false, 'a',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Insect insect = new Insect(0, plant, 40.60f);
-        Insect insect2 = new Insect(0, plant2, 40.60f);
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = new Bacteria(2, 2.16f);
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.Plant.id\n" +
-                "Expected: 150245871\n" +
-                "Actual: 150245872\n" +
-                "Values were different for: Insect.Plant.age\n" +
-                "Expected: 3\n" +
-                "Actual: 4\n" +
-                "Values were different for: Insect.Plant.height\n" +
-                "Expected: 50\n" +
-                "Actual: 51\n" +
-                "Values were different for: Insect.Plant.isFlowering\n" +
-                "Expected: true\n" +
-                "Actual: false\n", e.getMessage());
+        assertEquals("Values were different for: Insect.Bacteria.id\n" +
+                "Expected: 1\n" +
+                "Actual: 2\n" +
+                "Values were different for: Insect.Bacteria.size\n" +
+                "Expected: 1.15\n" +
+                "Actual: 2.16\n", e.getMessage());
     }
 
     @Test
     public void objectsAreNotEqualIfTheirInternalObjectsAreEqualButOtherFieldsAreNot() {
-        Plant plant = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
-                new Float[]{-10.10f, 0.0f, 40.60f}, new double[]{-100000d, 0.0d, 90000d},
-                new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        Insect insect = new Insect(1, plant, 50.60f);
-        Insect insect2 = new Insect(2, plant2, 40.60f);
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = new Bacteria(1, 1.15f);
+
+        Insect insect = new Insect(1, 50.50f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
         assertEquals("Values were different for: Insect.id\n" +
                 "Expected: 1\n" +
-                "Actual: 2\n" +
+                "Actual: 0\n" +
                 "Values were different for: Insect.size\n" +
-                "Expected: 50.6\n" +
+                "Expected: 50.5\n" +
                 "Actual: 40.6\n", e.getMessage());
+    }
+
+    @Test
+    public void objectsAreNotEqualIfObjectFieldsOfInternalObjectsAreEqualButOtherFieldsOfInternalObjectsAreNot() {
+        Bacteria bacteria = new Bacteria(1, 2.88f);
+        Bacteria bacteria2 = new Bacteria(2, 1.88f);
+
+        Insect insect = new Insect(0, 1.55f);
+        Insect insect2 = new Insect(0, 1.55f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+
+        bacteria.setInsect(insect);
+        bacteria2.setInsect(insect2);
+        AssertionError e = assertThrows(AssertionError.class, () ->
+                new ReflectionAssert().assertReflectionEquals(insect, insect2));
+        assertEquals("Values were different for: Insect.Bacteria.id\n" +
+                "Expected: 1\n" +
+                "Actual: 2\n" +
+                "Values were different for: Insect.Bacteria.size\n" +
+                "Expected: 2.88\n" +
+                "Actual: 1.88\n", e.getMessage());
+    }
+
+    @Test
+    public void objectsAreNotEqualIfPrimitiveFieldsOfInternalObjectsAreEqualButObjectFieldsOfInternalObjectsAreNot() {
+        Bacteria bacteria = new Bacteria(1, 2.88f);
+        Bacteria bacteria2 = new Bacteria(1, 2.88f);
+
+        Insect insect = new Insect(0, 1.55f);
+        Insect insect2 = new Insect(0, 1.55f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+
+        Insect insect3 = new Insect(5, 5.55f);
+        Insect insect4 = new Insect(6, 6.55f);
+        bacteria.setInsect(insect3);
+        bacteria2.setInsect(insect4);
+
+        AssertionError e = assertThrows(AssertionError.class,
+                () -> new ReflectionAssert().assertReflectionEquals(insect, insect2));
+        assertEquals("Values were different for: Insect.Bacteria.Insect.id\n" +
+                "Expected: 5\n" +
+                "Actual: 6\n" +
+                "Values were different for: Insect.Bacteria.Insect.size\n" +
+                "Expected: 5.55\n" +
+                "Actual: 6.55\n", e.getMessage());
     }
 }

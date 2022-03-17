@@ -8,7 +8,7 @@ public class ReflectionAssert {
     private boolean lenientOrder = false;
 
     public void assertReflectionEquals(Object expectedObject, Object actualObject) {
-        assertReflectionEquals(new ArrayDeque<>(), expectedObject, actualObject);
+        assertReflectionEquals(new ArrayDeque<>(), new HashSet<>(), expectedObject, actualObject);
     }
 
     public ReflectionAssert excludeFields(String ... fieldNames) {
@@ -21,7 +21,7 @@ public class ReflectionAssert {
         return this;
     }
 
-    private void assertReflectionEquals(Deque<Class<?>> fullPath, Object expectedObject, Object actualObject) {
+    private void assertReflectionEquals(Deque<Class<?>> fullPath, Set<Object> objects, Object expectedObject, Object actualObject) {
         StringBuilder errorMessage = new StringBuilder();
 
         if (expectedObject == actualObject) {
@@ -29,7 +29,7 @@ public class ReflectionAssert {
         }
         if (expectedObject == null) {
             fullPath.push(actualObject.getClass());
-            BuildErrorMessage.build(fullPath, expectedObject, "", actualObject, errorMessage);
+            BuildErrorMessage.build(fullPath, expectedObject, "", actualObject.toString(), errorMessage);
         } else if (actualObject == null) {
             fullPath.push(expectedObject.getClass());
             BuildErrorMessage.build(fullPath, expectedObject.toString(), "", actualObject, errorMessage);
@@ -51,7 +51,9 @@ public class ReflectionAssert {
                     errorMessage = new ReflectionAssertEqualsArrays(fullPath, field, lenientOrder).
                             assertEquals(expectedObject, actualObject, errorMessage);
                 } else {
-                    assertReferencesEqual(fullPath, field, expectedObject, actualObject);
+                    objects.add(expectedObject);
+                    objects.add(actualObject);
+                    assertReferencesEqual(fullPath, objects, field, expectedObject, actualObject);
                 }
             }
         }
@@ -90,10 +92,17 @@ public class ReflectionAssert {
         }
     }
 
-    private void assertReferencesEqual(Deque<Class<?>> fullPath, Field expectedField,
+    private void assertReferencesEqual(Deque<Class<?>> fullPath, Set<Object> objects, Field expectedField,
                                        Object expectedObject, Object actualObject) {
-        assertReflectionEquals(fullPath, ReflectionUtil.get(expectedField, expectedObject),
-                ReflectionUtil.get(expectedField, actualObject));
+        if (objects.contains(ReflectionUtil.get(expectedField, expectedObject)) ||
+                objects.contains(ReflectionUtil.get(expectedField, actualObject))) {
+            return;
+        }
+        assertReflectionEquals(fullPath, objects,
+                ReflectionUtil.get(expectedField, expectedObject), ReflectionUtil.get(expectedField, actualObject));
+        if (ReflectionUtil.get(expectedField, expectedObject) == null) {
+            return;
+        }
         fullPath.pop();
     }
 
