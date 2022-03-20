@@ -37,11 +37,49 @@ public class ReflectionAssertEqualsReferencesTest {
         Insect insect2 = new Insect(0, 40.60f);
         insect.setBacteria(bacteria);
         insect2.setBacteria(bacteria2);
-        new ReflectionAssert().excludeFields("bacteria").assertReflectionEquals(insect, insect2);
+        new ReflectionAssert().excludeFields(Insect.class, "bacteria").assertReflectionEquals(insect, insect2);
     }
 
     @Test
-    public void noInfiniteLoopIfObjectAndItsInternalObjectHaveBidectionalRelationship() {
+    public void possibleToSpecifyTheSameClassWithTheSameFieldsTwice() {
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = new Bacteria(2, 2.16f);
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+        new ReflectionAssert().excludeFields(Insect.class, "bacteria").
+                excludeFields(Insect.class, "bacteria").assertReflectionEquals(insect, insect2);
+    }
+
+    @Test
+    public void objectsAreEqualIfFieldsWithDifferentValuesForInternalObjectsWereExcluded() {
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = new Bacteria(2, 2.16f);
+
+        Insect insect = new Insect(0, 40.60f);
+        Insect insect2 = new Insect(0, 40.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+        new ReflectionAssert().excludeFields(Bacteria.class, "id", "size").assertReflectionEquals(insect, insect2);
+    }
+
+    @Test
+    public void objectsAreEqualIfFieldsWithDifferentValuesForExternalAndInternalObjectsWereExcluded() {
+        Bacteria bacteria = new Bacteria(1, 1.15f);
+        Bacteria bacteria2 = new Bacteria(2, 2.16f);
+
+        Insect insect = new Insect(3, 50.60f);
+        Insect insect2 = new Insect(4, 50.60f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+        new ReflectionAssert().excludeFields(Insect.class, "id").
+                excludeFields(Bacteria.class, "id", "size").assertReflectionEquals(insect, insect2);
+    }
+
+    @Test
+    public void noInfiniteLoopIfObjectAndItsInternalObjectHaveBidirectionalRelationships() {
         Bacteria bacteria = new Bacteria(1, 1.88f);
         Bacteria bacteria2 = new Bacteria(1, 1.88f);
 
@@ -186,5 +224,26 @@ public class ReflectionAssertEqualsReferencesTest {
                 "Values were different for: Insect.Bacteria.Insect.size\n" +
                 "Expected: 5.55\n" +
                 "Actual: 6.55\n", e.getMessage());
+    }
+
+    @Test
+    public void objectsAreNotEqualIf() {
+        Bacteria bacteria = new Bacteria(1, 2.88f);
+        Bacteria bacteria2 = new Bacteria(1, 2.88f);
+
+        Insect insect = new Insect(0, 1.55f);
+        Insect insect2 = new Insect(0, 1.55f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+
+        Insect insect3 = new Insect(5, 5.55f);
+        Insect insect4 = new Insect(5, 5.55f);
+        bacteria.setInsect(insect3);
+        bacteria2.setInsect(insect4);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new ReflectionAssert().
+                excludeFields(Person.class, "id", "test").
+                assertReflectionEquals(insect, insect2));
+        assertEquals("test is not field of Person class", e.getMessage());
     }
 }

@@ -14,7 +14,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
         Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'b',
                 new Float[]{10.10f, 40.60f, 20.00f}, new double[]{100000d, 400000d, 90000d},
                 new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        new ReflectionAssert().excludeFields("id", "letter").assertReflectionEquals(plant, plant2);
+        new ReflectionAssert().excludeFields(Plant.class, "id", "letter").assertReflectionEquals(plant, plant2);
     }
 
     @Test

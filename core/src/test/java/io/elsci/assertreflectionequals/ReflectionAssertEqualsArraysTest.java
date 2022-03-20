@@ -32,7 +32,7 @@ public class ReflectionAssertEqualsArraysTest {
         Plant plant2 = new Plant(150245871L, (short) 3, 50, true, 'a',
                 new Float[]{-10.10f, 00.00f, 2250.10f}, new double[]{100000d, Double.POSITIVE_INFINITY, 90000d},
                 new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
-        new ReflectionAssert().excludeFields("floatArray", "doubleArray").assertReflectionEquals(plant, plant2);
+        new ReflectionAssert().excludeFields(Plant.class, "floatArray", "doubleArray").assertReflectionEquals(plant, plant2);
     }
 
     @Test
