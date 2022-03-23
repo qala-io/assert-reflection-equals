@@ -38,7 +38,8 @@ public class ReflectionAssertTest {
         Person person2 = new Person(150245872L, (short) 26, 50.1008d, 165, (byte) 0b11, 70f,
                 (char) 77, true, new Integer[]{6, 111, 898, 1, 8}, new long[]{2, 17, 35, 150, 18});
         new ReflectionAssert().
-                excludeFields("id", "age", "weight", "height", "shoeSize", "waist", "intArray", "longArray").
+                excludeFields(Person.class, "id", "age", "weight", "height",
+                        "shoeSize", "clothingSize", "adult", "waist", "intArray", "longArray").
                 assertReflectionEquals(person, person2);
     }
 
@@ -125,8 +126,21 @@ public class ReflectionAssertTest {
         Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new ReflectionAssert().
-                excludeFields("id", "test").
+                excludeFields(Person.class, "id", "test").
                 assertReflectionEquals(person, person2));
-        assertEquals("test is not field of specified object", e.getMessage());
+        assertEquals("test is not field of Person class", e.getMessage());
+    }
+
+    @Test
+    public void specifiedFieldIsNotExcludedIfSpecifiedClassIsNotMatched() {
+        Person person = new Person(150245871L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
+                (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+        Person person2 = new Person(150245872L, (short) 25, 50.1007d, 164, (byte) 0b10, 69f,
+                (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
+        AssertionError e = assertThrows(AssertionError.class, () ->
+                new ReflectionAssert().excludeFields(Bacteria.class, "id").assertReflectionEquals(person, person2));
+        assertEquals("Values were different for: Person.id\n" +
+                "Expected: 150245871\n" +
+                "Actual: 150245872\n", e.getMessage());
     }
 }

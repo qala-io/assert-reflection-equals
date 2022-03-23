@@ -1,11 +1,16 @@
 package io.elsci.assertreflectionequals;
 
-import java.util.Set;
-
 public class Bacteria {
-    private Set<String> forms;
+    int id;
+    Insect insect;
+    float size;
 
-    public Bacteria(Set forms) {
-        this.forms = forms;
+    public Bacteria(int id, float size) {
+        this.id = id;
+        this.size = size;
+    }
+
+    public void setInsect(Insect insect) {
+        this.insect = insect;
     }
 }
