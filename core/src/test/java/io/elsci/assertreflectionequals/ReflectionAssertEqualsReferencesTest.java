@@ -5,6 +5,17 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ReflectionAssertEqualsReferencesTest {
+    @Test public void blah() {
+        Insect i1 = new Insect(1, 1);
+        Insect i2 = new Insect(1, 1);
+        Bacteria b1 = new Bacteria(4, 4);
+        Bacteria b2 = new Bacteria(4, 4);
+        b1.setInsect(i1);
+        b2.setInsect(i2);
+        // note that i2 doesn't have bacteria, so this should fail the assert, but it doesn't:
+        i1.setBacteria(b1);
+        assertThrows(AssertionError.class, ()->new ReflectionAssert().assertReflectionEquals(b1, b2));
+    }
     @Test
     public void objectsAreEqualIfInternalObjectsAreNull() {
         Bacteria bacteria = null;
