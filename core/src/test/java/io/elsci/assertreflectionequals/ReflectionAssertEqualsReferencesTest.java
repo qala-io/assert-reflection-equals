@@ -225,25 +225,4 @@ public class ReflectionAssertEqualsReferencesTest {
                 "Expected: 5.55\n" +
                 "Actual: 6.55\n", e.getMessage());
     }
-
-    @Test
-    public void objectsAreNotEqualIf() {
-        Bacteria bacteria = new Bacteria(1, 2.88f);
-        Bacteria bacteria2 = new Bacteria(1, 2.88f);
-
-        Insect insect = new Insect(0, 1.55f);
-        Insect insect2 = new Insect(0, 1.55f);
-        insect.setBacteria(bacteria);
-        insect2.setBacteria(bacteria2);
-
-        Insect insect3 = new Insect(5, 5.55f);
-        Insect insect4 = new Insect(5, 5.55f);
-        bacteria.setInsect(insect3);
-        bacteria2.setInsect(insect4);
-
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new ReflectionAssert().
-                excludeFields(Person.class, "id", "test").
-                assertReflectionEquals(insect, insect2));
-        assertEquals("test is not field of Person class", e.getMessage());
-    }
 }

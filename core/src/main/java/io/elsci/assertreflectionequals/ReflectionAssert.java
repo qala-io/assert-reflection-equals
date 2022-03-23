@@ -101,7 +101,7 @@ public class ReflectionAssert {
         }
         assertReflectionEquals(fullPath, objects,
                 ReflectionUtil.get(expectedField, expectedObject), ReflectionUtil.get(expectedField, actualObject));
-        if (ReflectionUtil.get(expectedField, expectedObject) == null) {
+        if (ReflectionUtil.get(expectedField, expectedObject) == ReflectionUtil.get(expectedField, actualObject)) {
             return;
         }
         fullPath.pop();
