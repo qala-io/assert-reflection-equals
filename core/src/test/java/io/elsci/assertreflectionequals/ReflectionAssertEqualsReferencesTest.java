@@ -5,6 +5,17 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ReflectionAssertEqualsReferencesTest {
+    @Test public void blah() {
+        Insect i1 = new Insect(1, 1);
+        Insect i2 = new Insect(1, 1);
+        Bacteria b1 = new Bacteria(4, 4);
+        Bacteria b2 = new Bacteria(4, 4);
+        b1.setInsect(i1);
+        b2.setInsect(i2);
+        i1.setBacteria(b1);
+        assertThrows(AssertionError.class, ()->new ReflectionAssert().assertReflectionEquals(b1, b2));
+    }
+
     @Test
     public void objectsAreEqualIfInternalObjectsAreNull() {
         Bacteria bacteria = null;
@@ -199,6 +210,31 @@ public class ReflectionAssertEqualsReferencesTest {
                 "Values were different for: Insect.Bacteria.size\n" +
                 "Expected: 2.88\n" +
                 "Actual: 1.88\n", e.getMessage());
+    }
+
+    @Test
+    public void testik() {
+        Bacteria bacteria = new Bacteria(1, 2.88f);
+        Bacteria bacteria2 = new Bacteria(2, 1.88f);
+
+        Insect insect = new Insect(0, 1.55f);
+        Insect insect2 = new Insect(0, 1.54f);
+        insect.setBacteria(bacteria);
+        insect2.setBacteria(bacteria2);
+
+        bacteria.setInsect(insect);
+        bacteria2.setInsect(insect2);
+        AssertionError e = assertThrows(AssertionError.class, () ->
+                new ReflectionAssert().assertReflectionEquals(insect, insect2));
+        assertEquals("Values were different for: Insect.Bacteria.id\n" +
+                "Expected: 1\n" +
+                "Actual: 2\n" +
+                "Values were different for: Insect.Bacteria.size\n" +
+                "Expected: 2.88\n" +
+                "Actual: 1.88\n" +
+                "Values were different for: Insect.size\n" +
+                "Expected: 1.55\n" +
+                "Actual: 1.54\n", e.getMessage());
     }
 
     @Test
