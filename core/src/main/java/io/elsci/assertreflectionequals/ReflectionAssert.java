@@ -9,7 +9,12 @@ public class ReflectionAssert {
     private StringBuilder errorMessage = new StringBuilder();
 
     public void assertReflectionEquals(Object expectedObject, Object actualObject) {
-        assertReflectionEquals(new ArrayDeque<>(), new IdentityHashMap<>(), expectedObject, actualObject);
+        // Put initial objects into checkedPairs collection so to have with what to compare next pair of object
+        IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs = new IdentityHashMap<>();
+        IdentityHashSet<Object> value = new IdentityHashSet<>();
+        value.add(actualObject);
+        checkedPairs.put(expectedObject, value);
+        assertReflectionEquals(new ArrayDeque<>(), checkedPairs, expectedObject, actualObject);
     }
 
     public ReflectionAssert excludeFields(Class<?> clazz, String... fieldNames) {
@@ -24,12 +29,12 @@ public class ReflectionAssert {
 
     /**
      * @param fullPath contains the path made of checking (checked) objects for proper building error messages
-     * @param checkedPairs contains pairs of objects (expected and actual) that were compared to each other: it also
+     * @param checkedPairs contains pairs of objects (expected and actual) that have been compared to each other: it also
      *                     helps to prevent going into infinite loop in case of bidirectional relationships
      * @param expectedObject expected object to be checked
      * @param actualObject   actual object to be checked
      */
-    private void assertReflectionEquals(Deque<Class<?>> fullPath, Map<Object, Object> checkedPairs,
+    private void assertReflectionEquals(Deque<Class<?>> fullPath, IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs,
                                         Object expectedObject, Object actualObject) {
         if (expectedObject == actualObject) {
             return;
@@ -43,10 +48,7 @@ public class ReflectionAssert {
             BuildErrorMessage.build(fullPath, expectedObject.toString(), "", actualObject, errorMessage);
             fullPath.pop();
         } else if (expectedObject.getClass() != actualObject.getClass()) {
-            fullPath.push(expectedObject.getClass());
-            fullPath.push(actualObject.getClass());
-            BuildErrorMessage.build(fullPath, expectedObject.getClass(), "", actualObject.getClass(), errorMessage);
-            fullPath.clear();
+            BuildErrorMessage.build(expectedObject, actualObject, errorMessage);
         } else {
             Class<?> expectedClass = expectedObject.getClass();
             fullPath.push(expectedClass);
@@ -68,7 +70,7 @@ public class ReflectionAssert {
             // when checking objects (no matter parent or child) was completed
             fullPath.pop();
         }
-        if (errorMessage.length() != 0 && fullPath.size() == 0) {
+        if (fullPath.isEmpty() && errorMessage.length() != 0) {
             throwAssertionError(errorMessage.toString());
         }
     }
@@ -120,37 +122,27 @@ public class ReflectionAssert {
      * @param expectedObject expected object to be checked
      * @param actualObject actual object to be checked
      */
-    private void assertReferencesEqual(Deque<Class<?>> fullPath, Map<Object, Object> checkedPairs, Field expectedField,
-                                       Object expectedObject, Object actualObject) {
-        if (checkedPairs.isEmpty()) {
-            IdentityHashMap<Object, Object> value = new IdentityHashMap<>();
-            value.put(actualObject, null);
-            checkedPairs.put(expectedObject, value);
-        }
+    private void assertReferencesEqual(Deque<Class<?>> fullPath, IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs,
+                                       Field expectedField, Object expectedObject, Object actualObject) {
 
         Object expected = ReflectionUtil.get(expectedField, expectedObject);
         Object actual = ReflectionUtil.get(expectedField, actualObject);
 
+
         if (expected != null && actual != null) {
-            for (Map.Entry<Object, Object> entry : checkedPairs.entrySet()) {
-                // In the following checks we will try to map our objects with objects (keys) that were already checked
-                IdentityHashMap<Object, Object> value = (IdentityHashMap<Object, Object>) entry.getValue();
-                if (entry.getKey() == expected) {
-                    if (!value.containsKey(actual)) {
-                        value.put(actual, null);
-                        entry.setValue(value);
-                        assertReflectionEquals(fullPath, checkedPairs, expected, actual);
-                    }
-                    return;
+            if (checkedPairs.containsKey(expected)) {
+                if (!checkedPairs.get(expected).contains(actual)) {
+                    checkedPairs.get(expected).add(actual);
+                    assertReflectionEquals(fullPath, checkedPairs, expected, actual);
                 }
-                if (entry.getKey() == actual) {
-                    if (!value.containsKey(expected)) {
-                        value.put(expected, null);
-                        entry.setValue(value);
-                        assertReflectionEquals(fullPath, checkedPairs, expected, actual);
-                    }
-                    return;
+                return;
+            }
+            if (checkedPairs.containsKey(actual)) {
+                if (!checkedPairs.get(actual).contains(expected)) {
+                    checkedPairs.get(actual).add(expected);
+                    assertReflectionEquals(fullPath, checkedPairs, expected, actual);
                 }
+                return;
             }
         }
         assertReflectionEquals(fullPath, checkedPairs, expected, actual);
