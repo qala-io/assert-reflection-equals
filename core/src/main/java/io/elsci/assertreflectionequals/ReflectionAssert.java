@@ -131,7 +131,7 @@ public class ReflectionAssert {
             IdentityHashSet<Object> rightSet = checkedPairs.computeIfAbsent(expected, k -> new IdentityHashSet<>());
             if (rightSet.contains(actual))
                 return;
-            checkedPairs.get(expected).add(actual);
+            rightSet.add(actual);
             checkedPairs.computeIfAbsent(actual, k -> new IdentityHashSet<>()).add(expected);
         }
         assertReflectionEquals(fullPath, checkedPairs, expected, actual);
