@@ -11,9 +11,8 @@ public class ReflectionAssert {
     public void assertReflectionEquals(Object expectedObject, Object actualObject) {
         // Put initial objects into checkedPairs collection so to have with what to compare next pair of object
         IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs = new IdentityHashMap<>();
-        IdentityHashSet<Object> value = new IdentityHashSet<>();
-        value.add(actualObject);
-        checkedPairs.put(expectedObject, value);
+        checkedPairs.put(expectedObject, new IdentityHashSet<>(actualObject));
+        checkedPairs.put(actualObject, new IdentityHashSet<>(expectedObject));
         assertReflectionEquals(new ArrayDeque<>(), checkedPairs, expectedObject, actualObject);
     }
 
@@ -128,22 +127,12 @@ public class ReflectionAssert {
         Object expected = ReflectionUtil.get(expectedField, expectedObject);
         Object actual = ReflectionUtil.get(expectedField, actualObject);
 
-
         if (expected != null && actual != null) {
-            if (checkedPairs.containsKey(expected)) {
-                if (!checkedPairs.get(expected).contains(actual)) {
-                    checkedPairs.get(expected).add(actual);
-                    assertReflectionEquals(fullPath, checkedPairs, expected, actual);
-                }
+            IdentityHashSet<Object> rightSet = checkedPairs.computeIfAbsent(expected, k -> new IdentityHashSet<>());
+            if (rightSet.contains(actual))
                 return;
-            }
-            if (checkedPairs.containsKey(actual)) {
-                if (!checkedPairs.get(actual).contains(expected)) {
-                    checkedPairs.get(actual).add(expected);
-                    assertReflectionEquals(fullPath, checkedPairs, expected, actual);
-                }
-                return;
-            }
+            checkedPairs.get(expected).add(actual);
+            checkedPairs.computeIfAbsent(actual, k -> new IdentityHashSet<>()).add(expected);
         }
         assertReflectionEquals(fullPath, checkedPairs, expected, actual);
     }

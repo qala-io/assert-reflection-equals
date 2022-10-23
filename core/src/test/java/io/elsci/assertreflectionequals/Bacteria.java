@@ -2,7 +2,8 @@ package io.elsci.assertreflectionequals;
 
 public class Bacteria {
     int id;
-    Insect insect;
+//    Insect insect;
+    Bacteria bacteria;
     float size;
 
     public Bacteria(int id, float size) {
@@ -10,7 +11,7 @@ public class Bacteria {
         this.size = size;
     }
 
-    public void setInsect(Insect insect) {
-        this.insect = insect;
+    public void setBacteria(Bacteria bacteria) {
+        this.bacteria = bacteria;
     }
 }

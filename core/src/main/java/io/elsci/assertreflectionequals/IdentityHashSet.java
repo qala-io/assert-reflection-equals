@@ -1,28 +1,22 @@
 package io.elsci.assertreflectionequals;
 
-import java.util.AbstractSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
- * IdentityHashMap-backed implementation of the Set interface.
+ * {@link IdentityHashMap}-backed implementation of the {@link Set} interface.
  * This means that whether an object is an element of the set depends on whether it is == (rather than equals()) to an element of the set.
  * Each element in the set is a key in the backing IdentityHashMap.
- * @param <E>
  */
 public class IdentityHashSet<E> extends AbstractSet<E> {
 
-    private transient IdentityHashMap<E,Boolean> map;
+    private final transient IdentityHashMap<E,Boolean> map;
 
     /**
      * Construct a new, empty IdentityHashSet whose backing IdentityHashMap has the default expected maximum size (21)
      */
-    public IdentityHashSet() {
+    public IdentityHashSet(E ... initial) {
         map = new IdentityHashMap<>();
+        this.addAll(Arrays.asList(initial));
     }
 
     /**
@@ -30,12 +24,7 @@ public class IdentityHashSet<E> extends AbstractSet<E> {
      */
     @Override
     public boolean add(E o) {
-        if (map.containsKey(o)) {
-            return false;
-        } else {
-            map.put(o, Boolean.TRUE);
-            return true;
-        }
+        return map.put(o, Boolean.FALSE) == null;
     }
 
     /**
