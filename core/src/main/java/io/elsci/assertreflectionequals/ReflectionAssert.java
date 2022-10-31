@@ -52,7 +52,7 @@ public class ReflectionAssert {
             Class<?> expectedClass = expectedObject.getClass();
             fullPath.push(expectedClass);
 
-            Field[] fields = getProperFields(expectedClass, expectedClass.getDeclaredFields());
+            Field[] fields = getProperFields(expectedClass);
             for (Field field : fields) {
                 field.setAccessible(true);
                 if (field.getType().isPrimitive()) {
@@ -77,40 +77,17 @@ public class ReflectionAssert {
     /**
      * Gets proper array of fields in case some fields were excluded
      * @param expectedClass class of objects
-     * @param objectFields fields of comparing objects
      */
-    private Field[] getProperFields(Class<?> expectedClass, Field[] objectFields) {
-        if (excludedFields.isEmpty() || !excludedFields.containsKey(expectedClass)) {
-            return objectFields;
+    private Field[] getProperFields(Class<?> expectedClass) {
+        if (!excludedFields.containsKey(expectedClass)) {
+            return expectedClass.getDeclaredFields();
         }
         Set<String> excludedNames = excludedFields.get(expectedClass);
-        verifyExcludedFields(objectFields, excludedNames, expectedClass);
-        ArrayList<Field> fields = new ArrayList<>();
-        for (Field objectField : objectFields) {
-            objectField.setAccessible(true);
-            if (!excludedNames.contains(objectField.getName())) {
-                fields.add(objectField);
-            }
-        }
-        return fields.toArray(new Field[0]);
-    }
+        ReflectionUtil.assertExcludedFields(expectedClass, excludedNames);
 
-    /**
-     * Validates if excluded field name belongs to the specified object
-     * @param objectFields fields of comparing objects
-     * @param excludedNames set of fields that must be excluded from the checking
-     */
-    private void verifyExcludedFields(Field[] objectFields, Set<String> excludedNames, Class<?> expectedClass) {
-        ArrayList<String> fieldNames = new ArrayList<>();
-        for (Field objectField : objectFields) {
-            objectField.setAccessible(true);
-            fieldNames.add(objectField.getName());
-        }
-        for (String name : excludedNames) {
-            if (!fieldNames.contains(name)) {
-                throw new IllegalArgumentException(name + " is not field of " + expectedClass.getSimpleName() + " class");
-            }
-        }
+        List<Field> fields = new LinkedList<>(Arrays.asList(expectedClass.getDeclaredFields()));
+        fields.removeIf(field -> excludedNames.contains(field.getName()));
+        return fields.toArray(new Field[0]);
     }
 
     /**
