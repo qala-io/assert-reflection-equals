@@ -128,7 +128,7 @@ public class ReflectionAssert {
         Object actual = ReflectionUtil.get(expectedField, actualObject);
 
         if (expected != null && actual != null) {
-            IdentityHashSet<Object> rightSet = checkedPairs.computeIfAbsent(expected, k -> new IdentityHashSet<>());
+            Set<Object> rightSet = checkedPairs.computeIfAbsent(expected, k -> new IdentityHashSet<>());
             if (rightSet.contains(actual))
                 return;
             rightSet.add(actual);

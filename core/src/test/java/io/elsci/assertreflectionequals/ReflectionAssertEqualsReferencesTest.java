@@ -42,7 +42,7 @@ public class ReflectionAssertEqualsReferencesTest {
     }
 
     @Test
-    public void possibleToSpecifyTheSameClassWithTheSameFieldsTwice() {
+    public void excludingSameClassTwice_overwritesPreviousExclusion() {
         Bacteria bacteria = new Bacteria(1, 1.15f);
         Bacteria bacteria2 = new Bacteria(2, 2.16f);
 
