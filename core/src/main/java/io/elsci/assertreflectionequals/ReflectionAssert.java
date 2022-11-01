@@ -9,7 +9,7 @@ public class ReflectionAssert {
     private StringBuilder errorMessage = new StringBuilder();
 
     public void assertReflectionEquals(Object expectedObject, Object actualObject) {
-        // Put initial objects into checkedPairs collection so to have with what to compare next pair of object
+        // Put initial objects into checkedPairs collection so to have with what to compare next pair of objects
         IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs = new IdentityHashMap<>();
         checkedPairs.put(expectedObject, new IdentityHashSet<>(actualObject));
         checkedPairs.put(actualObject, new IdentityHashSet<>(expectedObject));
@@ -33,26 +33,19 @@ public class ReflectionAssert {
      * @param expectedObject expected object to be checked
      * @param actualObject   actual object to be checked
      */
-    private void assertReflectionEquals(Deque<Class<?>> fullPath, IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs,
+    private void assertReflectionEquals(Deque<String> fullPath, IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs,
                                         Object expectedObject, Object actualObject) {
         if (expectedObject == actualObject) {
             return;
         }
         if (expectedObject == null) {
-            fullPath.push(actualObject.getClass());
             BuildErrorMessage.build(fullPath, expectedObject, "", actualObject.toString(), errorMessage);
-            fullPath.pop();
         } else if (actualObject == null) {
-            fullPath.push(expectedObject.getClass());
             BuildErrorMessage.build(fullPath, expectedObject.toString(), "", actualObject, errorMessage);
-            fullPath.pop();
         } else if (expectedObject.getClass() != actualObject.getClass()) {
             BuildErrorMessage.build(expectedObject, actualObject, errorMessage);
         } else {
-            Class<?> expectedClass = expectedObject.getClass();
-            fullPath.push(expectedClass);
-
-            Field[] fields = getProperFields(expectedClass);
+            Field[] fields = getProperFields(expectedObject.getClass());
             for (Field field : fields) {
                 field.setAccessible(true);
                 if (field.getType().isPrimitive()) {
@@ -65,9 +58,6 @@ public class ReflectionAssert {
                     assertReferencesEqual(fullPath, checkedPairs, field, expectedObject, actualObject);
                 }
             }
-            // We need to clear path for proper building error messages and for timely throwing error each time
-            // when checking objects (no matter parent or child) was completed
-            fullPath.pop();
         }
         if (fullPath.isEmpty() && errorMessage.length() != 0) {
             throwAssertionError(errorMessage.toString());
@@ -79,9 +69,8 @@ public class ReflectionAssert {
      * @param expectedClass class of objects
      */
     private Field[] getProperFields(Class<?> expectedClass) {
-        if (!excludedFields.containsKey(expectedClass)) {
+        if (!excludedFields.containsKey(expectedClass))
             return expectedClass.getDeclaredFields();
-        }
         Set<String> excludedNames = excludedFields.get(expectedClass);
         ReflectionUtil.assertExcludedFields(expectedClass, excludedNames);
 
@@ -98,7 +87,7 @@ public class ReflectionAssert {
      * @param expectedObject expected object to be checked
      * @param actualObject actual object to be checked
      */
-    private void assertReferencesEqual(Deque<Class<?>> fullPath, IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs,
+    private void assertReferencesEqual(Deque<String> fullPath, IdentityHashMap<Object, IdentityHashSet<Object>> checkedPairs,
                                        Field expectedField, Object expectedObject, Object actualObject) {
 
         Object expected = ReflectionUtil.get(expectedField, expectedObject);
@@ -111,7 +100,9 @@ public class ReflectionAssert {
             rightSet.add(actual);
             checkedPairs.computeIfAbsent(actual, k -> new IdentityHashSet<>()).add(expected);
         }
+        fullPath.push(expectedField.getName());
         assertReflectionEquals(fullPath, checkedPairs, expected, actual);
+        fullPath.pop();
     }
 
     private void throwAssertionError(String message) {

@@ -7,22 +7,24 @@ import java.util.Deque;
 import java.util.Objects;
 
 class ReflectionAssertEqualsArrays {
-    private final Deque<Class<?>> fullPath;
+    private final Deque<String> fullPath;
     private final Field field;
     private final boolean lenientOrder;
 
-    public ReflectionAssertEqualsArrays(Deque<Class<?>> fullPath, Field field, boolean lenientOrder) {
+    public ReflectionAssertEqualsArrays(Deque<String> fullPath, Field field, boolean lenientOrder) {
         this.fullPath = fullPath;
         this.field = field;
         this.lenientOrder = lenientOrder;
     }
 
     public StringBuilder assertEquals(Object expectedObject, Object actualObject, StringBuilder errorMessage) {
+        fullPath.push(field.getName());
         if (!compareArrays(ReflectionUtil.get(field, expectedObject), ReflectionUtil.get(field, actualObject))) {
-            return BuildErrorMessage.build(fullPath,
+            BuildErrorMessage.build(fullPath,
                     Arrays.toString(getArrayWithValues(ReflectionUtil.get(field, expectedObject))), field.getName(),
                     Arrays.toString(getArrayWithValues(ReflectionUtil.get(field, actualObject))), errorMessage);
         }
+        fullPath.pop();
         return errorMessage;
     }
 

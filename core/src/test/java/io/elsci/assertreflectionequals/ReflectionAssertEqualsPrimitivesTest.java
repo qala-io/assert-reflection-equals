@@ -25,7 +25,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.shoeSize\n" +
+        assertEquals("Values were different for: shoeSize\n" +
                 "Expected: 0\n" +
                 "Actual: 2\n", e.getMessage());
     }
@@ -38,7 +38,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: Animal.age\n" +
+        assertEquals("Values were different for: age\n" +
                 "Expected: 25\n" +
                 "Actual: 24\n", e.getMessage());
     }
@@ -51,7 +51,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: Animal.height\n" +
+        assertEquals("Values were different for: height\n" +
                 "Expected: 165\n" +
                 "Actual: -165\n", e.getMessage());
     }
@@ -64,7 +64,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: Animal.id\n" +
+        assertEquals("Values were different for: id\n" +
                 "Expected: 150245875\n" +
                 "Actual: 150245874\n", e.getMessage());
     }
@@ -77,7 +77,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.waist\n" +
+        assertEquals("Values were different for: waist\n" +
                 "Expected: 70.0\n" +
                 "Actual: 69.0\n", e.getMessage());
     }
@@ -90,7 +90,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: Animal.weight\n" +
+        assertEquals("Values were different for: weight\n" +
                 "Expected: 50.1007\n" +
                 "Actual: 50.1006\n", e.getMessage());
     }
@@ -103,7 +103,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.clothingSize\n" +
+        assertEquals("Values were different for: clothingSize\n" +
                 "Expected: L\n" +
                 "Actual: M\n", e.getMessage());
     }
@@ -116,7 +116,7 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, false, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.adult\n" +
+        assertEquals("Values were different for: adult\n" +
                 "Expected: true\n" +
                 "Actual: false\n", e.getMessage());
     }

@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
 
 public class ReflectionAssertEqualsArraysTest {
     @Test
@@ -69,7 +70,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{-5, -10, -897, -14, -7}, new long[]{16, 34, 17, 149, 1});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.longArray\n" +
+        assertEquals("Values were different for: longArray\n" +
                 "Expected: null\n" +
                 "Actual: [16, 34, 17, 149, 1]\n", e.getMessage());
     }
@@ -82,7 +83,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, null);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.longArray\n" +
+        assertEquals("Values were different for: longArray\n" +
                 "Expected: [16, 34, 17, 149, 1]\n" +
                 "Actual: null\n", e.getMessage());
     }
@@ -95,7 +96,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{16, 34, 17, 149, 1, 100});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.longArray\n" +
+        assertEquals("Values were different for: longArray\n" +
                 "Expected: []\n" +
                 "Actual: [16, 34, 17, 149, 1, 100]\n", e.getMessage());
     }
@@ -108,7 +109,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.longArray\n" +
+        assertEquals("Values were different for: longArray\n" +
                 "Expected: [16, 34, 17, 149, 1]\n" +
                 "Actual: []\n", e.getMessage());
     }
@@ -121,7 +122,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 1, 100});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.longArray\n" +
+        assertEquals("Values were different for: longArray\n" +
                 "Expected: [1, 16, 34]\n" +
                 "Actual: [1, 16, 34, 149, 1, 100]\n", e.getMessage());
     }
@@ -134,10 +135,10 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{-10, -897, -7, -5, -14}, new long[]{34, 149, 34, 1, 17});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.intArray\n" +
+        assertEquals("Values were different for: intArray\n" +
                 "Expected: [-5, -10, -897, -14, -7]\n" +
                 "Actual: [-10, -897, -7, -5, -14]\n" +
-                "Values were different for: Person.longArray\n" +
+                "Values were different for: longArray\n" +
                 "Expected: [16, 34, 17, 149, 1]\n" +
                 "Actual: [34, 149, 34, 1, 17]\n", e.getMessage());
     }
@@ -150,7 +151,7 @@ public class ReflectionAssertEqualsArraysTest {
                 new Byte[]{112, 115, 0}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: Animal.byteArray\n" +
+        assertEquals("Values were different for: byteArray\n" +
                 "Expected: [-112, 115, 0]\n" +
                 "Actual: [112, 115, 0]\n", e.getMessage());
     }
@@ -163,7 +164,7 @@ public class ReflectionAssertEqualsArraysTest {
                 new Byte[]{-112, -115, -20}, new short[]{10, 10, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: Animal.shortArray\n" +
+        assertEquals("Values were different for: shortArray\n" +
                 "Expected: [40, 30, 10]\n" +
                 "Actual: [10, 10, 10]\n", e.getMessage());
     }
@@ -176,7 +177,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{-10, -897, -7, -5, -14}, new long[]{16, 34, 17, 149, 1});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.intArray\n" +
+        assertEquals("Values were different for: intArray\n" +
                 "Expected: [-5, -10, -897, -14, -7]\n" +
                 "Actual: [-10, -897, -7, -5, -14]\n", e.getMessage());
     }
@@ -189,7 +190,7 @@ public class ReflectionAssertEqualsArraysTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 14, 0}, new long[]{34, 149, 34, 1, 17});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.longArray\n" +
+        assertEquals("Values were different for: longArray\n" +
                 "Expected: [16, 34, 17, 149, 1]\n" +
                 "Actual: [34, 149, 34, 1, 17]\n", e.getMessage());
     }
@@ -206,7 +207,7 @@ public class ReflectionAssertEqualsArraysTest {
                 new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(plant, plant2));
-        assertEquals("Values were different for: Plant.floatArray\n" +
+        assertEquals("Values were different for: floatArray\n" +
                 "Expected: [-Infinity, -10.1, 0.0, 40.6, Infinity, NaN]\n" +
                 "Actual: [Infinity, 0.0, -Infinity, -10.1, 40.6, NaN]\n", e.getMessage());
     }
@@ -223,7 +224,7 @@ public class ReflectionAssertEqualsArraysTest {
                 new Character[]{'a', 'b', 'c'}, new boolean[]{true, false, true});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(plant, plant2));
-        assertEquals("Values were different for: Plant.doubleArray\n" +
+        assertEquals("Values were different for: doubleArray\n" +
                 "Expected: [-100000.0, 0.0, 90000.0, -Infinity, Infinity, NaN]\n" +
                 "Actual: [-Infinity, -100000.0, 0.0, 90000.0, Infinity, NaN]\n", e.getMessage());
     }
@@ -240,7 +241,7 @@ public class ReflectionAssertEqualsArraysTest {
                 new Character[]{'d', 'e', 'f'}, new boolean[]{true, false, true});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(plant, plant2));
-        assertEquals("Values were different for: Plant.charArray\n" +
+        assertEquals("Values were different for: charArray\n" +
                 "Expected: [a, b, c]\n" +
                 "Actual: [d, e, f]\n", e.getMessage());
     }
@@ -257,7 +258,7 @@ public class ReflectionAssertEqualsArraysTest {
                 new Character[]{'a', 'b', 'c'}, new boolean[]{true, true, true});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(plant, plant2));
-        assertEquals("Values were different for: Plant.booleanArray\n" +
+        assertEquals("Values were different for: booleanArray\n" +
                 "Expected: [true, false, true]\n" +
                 "Actual: [true, true, true]\n", e.getMessage());
     }

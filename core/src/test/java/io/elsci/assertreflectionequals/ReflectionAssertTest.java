@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
 
 public class ReflectionAssertTest {
     @Test
@@ -50,9 +51,7 @@ public class ReflectionAssertTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Person\n" +
-                        "Expected: null\n" +
-                        "Actual: io.elsci.assertreflectionequals.Person@"));
+        assertTrue(e.getMessage().startsWith("\n" + "Expected: null\n" + "Actual: io.elsci.assertreflectionequals.Person@"));
     }
 
     @Test
@@ -62,8 +61,8 @@ public class ReflectionAssertTest {
         Person person2 = null;
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Person\n" +
-                "Expected: io.elsci.assertreflectionequals.Person@"));
+        assertTrue(e.getMessage().startsWith("\n" + "Expected: io.elsci.assertreflectionequals.Person@"));
+        assertTrue(e.getMessage().contains("Actual: null"));
     }
 
     @Test
@@ -87,34 +86,34 @@ public class ReflectionAssertTest {
                 (char) 76, false, new Integer[]{0, 0, 0, 0, 0}, new long[]{2, 17, 35, 150, 18});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.id\n" +
+        assertEquals("Values were different for: id\n" +
                 "Expected: 150245872\n" +
                 "Actual: 150245871\n" +
-                "Values were different for: Person.age\n" +
+                "Values were different for: age\n" +
                 "Expected: 30\n" +
                 "Actual: 25\n" +
-                "Values were different for: Person.weight\n" +
+                "Values were different for: weight\n" +
                 "Expected: 55.1007\n" +
                 "Actual: 50.1007\n" +
-                "Values were different for: Person.height\n" +
+                "Values were different for: height\n" +
                 "Expected: 170\n" +
                 "Actual: 164\n" +
-                "Values were different for: Person.shoeSize\n" +
+                "Values were different for: shoeSize\n" +
                 "Expected: 127\n" +
                 "Actual: 2\n" +
-                "Values were different for: Person.waist\n" +
+                "Values were different for: waist\n" +
                 "Expected: 100.0\n" +
                 "Actual: 69.0\n" +
-                "Values were different for: Person.clothingSize\n" +
+                "Values were different for: clothingSize\n" +
                 "Expected: M\n" +
                 "Actual: L\n" +
-                "Values were different for: Person.adult\n" +
+                "Values were different for: adult\n" +
                 "Expected: true\n" +
                 "Actual: false\n" +
-                "Values were different for: Person.intArray\n" +
+                "Values were different for: intArray\n" +
                 "Expected: [5, 10, 897, 0, 7]\n" +
                 "Actual: [0, 0, 0, 0, 0]\n" +
-                "Values were different for: Person.longArray\n" +
+                "Values were different for: longArray\n" +
                 "Expected: [1, 16, 34, 149, 17]\n" +
                 "Actual: [2, 17, 35, 150, 18]\n", e.getMessage());
     }
@@ -139,7 +138,7 @@ public class ReflectionAssertTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().excludeFields(Bacteria.class, "id").assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: Person.id\n" +
+        assertEquals("Values were different for: id\n" +
                 "Expected: 150245871\n" +
                 "Actual: 150245872\n", e.getMessage());
     }

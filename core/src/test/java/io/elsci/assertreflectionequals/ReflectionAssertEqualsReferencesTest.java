@@ -3,6 +3,7 @@ package io.elsci.assertreflectionequals;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
 
 public class ReflectionAssertEqualsReferencesTest {
 
@@ -95,13 +96,13 @@ public class ReflectionAssertEqualsReferencesTest {
         bacteria2.setInsect(insect);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria.Insect.id\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: bacteria.insect.id\n" +
                 "Expected: 1\n" +
                 "Actual: 0\n" +
-                "Values were different for: Insect.Bacteria.Insect.Bacteria\n" +
+                "Values were different for: bacteria.insect.bacteria\n" +
                 "Expected: null\n" +
                 "Actual: io.elsci.assertreflectionequals.Bacteria@"));
-        assertTrue(e.getMessage().contains("Values were different for: Insect.Bacteria.Insect.size\n" +
+        assertTrue(e.getMessage().contains("Values were different for: bacteria.insect.size\n" +
                 "Expected: 1.54\n" +
                 "Actual: 1.55"));
     }
@@ -152,13 +153,13 @@ public class ReflectionAssertEqualsReferencesTest {
         bacteria2.setInsect(insect3);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria.Insect.id\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: bacteria.insect.id\n" +
                 "Expected: 0\n" +
                 "Actual: 1\n" +
-                "Values were different for: Insect.Bacteria.Insect.Bacteria\n" +
+                "Values were different for: bacteria.insect.bacteria\n" +
                 "Expected: io.elsci.assertreflectionequals.Bacteria"));
         assertTrue(e.getMessage().contains("Actual: null\n" +
-                "Values were different for: Insect.Bacteria.Insect.size\n" +
+                "Values were different for: bacteria.insect.size\n" +
                 "Expected: 1.55\n" +
                 "Actual: 1.54\n"));
     }
@@ -191,7 +192,7 @@ public class ReflectionAssertEqualsReferencesTest {
         insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: bacteria\n" +
                 "Expected: null\n" +
                 "Actual: io.elsci.assertreflectionequals.Bacteria@"));
     }
@@ -207,10 +208,10 @@ public class ReflectionAssertEqualsReferencesTest {
         insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: bacteria\n" +
                 "Expected: null\n" +
                 "Actual: io.elsci.assertreflectionequals.Bacteria@"));
-        assertTrue(e.getMessage().contains("Values were different for: Insect.size\n" +
+        assertTrue(e.getMessage().contains("Values were different for: size\n" +
                 "Expected: 40.61\n" +
                 "Actual: 40.65\n"));
     }
@@ -226,7 +227,7 @@ public class ReflectionAssertEqualsReferencesTest {
         insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: bacteria\n" +
                 "Expected: io.elsci.assertreflectionequals.Bacteria@"));
         assertTrue(e.getMessage().contains("Actual: null"));
     }
@@ -242,10 +243,10 @@ public class ReflectionAssertEqualsReferencesTest {
         insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertTrue(e.getMessage().startsWith("Values were different for: Insect.Bacteria\n" +
+        assertTrue(e.getMessage().startsWith("Values were different for: bacteria\n" +
                 "Expected: io.elsci.assertreflectionequals.Bacteria@"));
         assertTrue(e.getMessage().contains("Actual: null\n" +
-                "Values were different for: Insect.size\n" +
+                "Values were different for: size\n" +
                 "Expected: 40.61\n" +
                 "Actual: 40.65"));
     }
@@ -261,10 +262,10 @@ public class ReflectionAssertEqualsReferencesTest {
         insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.Bacteria.id\n" +
+        assertEquals("Values were different for: bacteria.id\n" +
                 "Expected: 1\n" +
                 "Actual: 2\n" +
-                "Values were different for: Insect.Bacteria.size\n" +
+                "Values were different for: bacteria.size\n" +
                 "Expected: 1.15\n" +
                 "Actual: 2.16\n", e.getMessage());
     }
@@ -280,10 +281,10 @@ public class ReflectionAssertEqualsReferencesTest {
         insect2.setBacteria(bacteria2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.id\n" +
+        assertEquals("Values were different for: id\n" +
                 "Expected: 1\n" +
                 "Actual: 0\n" +
-                "Values were different for: Insect.size\n" +
+                "Values were different for: size\n" +
                 "Expected: 50.5\n" +
                 "Actual: 40.6\n", e.getMessage());
     }
@@ -302,10 +303,10 @@ public class ReflectionAssertEqualsReferencesTest {
         bacteria2.setInsect(insect2);
         AssertionError e = assertThrows(AssertionError.class, () ->
                 new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.Bacteria.id\n" +
+        assertEquals("Values were different for: bacteria.id\n" +
                 "Expected: 1\n" +
                 "Actual: 2\n" +
-                "Values were different for: Insect.Bacteria.size\n" +
+                "Values were different for: bacteria.size\n" +
                 "Expected: 2.88\n" +
                 "Actual: 1.88\n", e.getMessage());
     }
@@ -327,10 +328,10 @@ public class ReflectionAssertEqualsReferencesTest {
 
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(insect, insect2));
-        assertEquals("Values were different for: Insect.Bacteria.Insect.id\n" +
+        assertEquals("Values were different for: bacteria.insect.id\n" +
                 "Expected: 5\n" +
                 "Actual: 6\n" +
-                "Values were different for: Insect.Bacteria.Insect.size\n" +
+                "Values were different for: bacteria.insect.size\n" +
                 "Expected: 5.55\n" +
                 "Actual: 6.55\n", e.getMessage());
     }
