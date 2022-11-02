@@ -25,9 +25,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: shoeSize\n" +
-                "Expected: 0\n" +
-                "Actual: 2\n", e.getMessage());
+        assertEquals("\nExpected: Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=0, " +
+                "waist=70.0, clothingSize=M, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "Actual:   Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, waist=70.0, " +
+                "clothingSize=M, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "shoeSize expected: 0\n" +
+                "shoeSize actual:   2", e.getMessage());
     }
 
     @Test
@@ -38,9 +43,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: age\n" +
-                "Expected: 25\n" +
-                "Actual: 24\n", e.getMessage());
+        assertEquals("\nExpected: Animal<id=150245875, age=25, weight=50.1007, height=165, " +
+                "byteArray=[112, 114, 111], shortArray=[40, 30, 10]>\n" +
+                "Actual:   Animal<id=150245875, age=24, weight=50.1007, height=165, byteArray=[112, 114, 111], " +
+                "shortArray=[40, 30, 10]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "age expected: 25\n" +
+                "age actual:   24", e.getMessage());
     }
 
     @Test
@@ -51,9 +61,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: height\n" +
-                "Expected: 165\n" +
-                "Actual: -165\n", e.getMessage());
+        assertEquals("\nExpected: Animal<id=150245875, age=25, weight=50.1007, height=165, " +
+                "byteArray=[112, 114, 111], shortArray=[40, 30, 10]>\n" +
+                "Actual:   Animal<id=150245875, age=25, weight=50.1007, height=-165, byteArray=[112, 114, 111], " +
+                "shortArray=[40, 30, 10]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "height expected: 165\n" +
+                "height actual:   -165", e.getMessage());
     }
 
     @Test
@@ -64,9 +79,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: id\n" +
-                "Expected: 150245875\n" +
-                "Actual: 150245874\n", e.getMessage());
+        assertEquals("\nExpected: Animal<id=150245875, age=25, weight=50.1007, height=165, " +
+                "byteArray=[112, 114, 111], shortArray=[40, 30, 10]>\n" +
+                "Actual:   Animal<id=150245874, age=25, weight=50.1007, height=165, byteArray=[112, 114, 111], " +
+                "shortArray=[40, 30, 10]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "id expected: 150245875\n" +
+                "id actual:   150245874", e.getMessage());
     }
 
     @Test
@@ -77,9 +97,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: waist\n" +
-                "Expected: 70.0\n" +
-                "Actual: 69.0\n", e.getMessage());
+        assertEquals("\nExpected: Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, " +
+                "waist=70.0, clothingSize=M, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "Actual:   Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, waist=69.0, " +
+                "clothingSize=M, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "waist expected: 70.0\n" +
+                "waist actual:   69.0", e.getMessage());
     }
 
     @Test
@@ -90,9 +115,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 new Byte[]{112, 114, 111}, new short[]{40, 30, 10});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(animal, animal2));
-        assertEquals("Values were different for: weight\n" +
-                "Expected: 50.1007\n" +
-                "Actual: 50.1006\n", e.getMessage());
+        assertEquals("\nExpected: Animal<id=150245875, age=25, weight=50.1007, height=165, " +
+                "byteArray=[112, 114, 111], shortArray=[40, 30, 10]>\n" +
+                "Actual:   Animal<id=150245875, age=25, weight=50.1006, height=165, byteArray=[112, 114, 111], " +
+                "shortArray=[40, 30, 10]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "weight expected: 50.1007\n" +
+                "weight actual:   50.1006", e.getMessage());
     }
 
     @Test
@@ -103,9 +133,14 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, true, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: clothingSize\n" +
-                "Expected: L\n" +
-                "Actual: M\n", e.getMessage());
+        assertEquals("\nExpected: Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, " +
+                "waist=70.0, clothingSize=L, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "Actual:   Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, waist=70.0, " +
+                "clothingSize=M, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "clothingSize expected: L\n" +
+                "clothingSize actual:   M", e.getMessage());
     }
 
     @Test
@@ -116,8 +151,13 @@ public class ReflectionAssertEqualsPrimitivesTest {
                 (char) 77, false, new Integer[]{5, 10, 897, 0, 7}, new long[]{1, 16, 34, 149, 17});
         AssertionError e = assertThrows(AssertionError.class,
                 () -> new ReflectionAssert().assertReflectionEquals(person, person2));
-        assertEquals("Values were different for: adult\n" +
-                "Expected: true\n" +
-                "Actual: false\n", e.getMessage());
+        assertEquals("\nExpected: Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, " +
+                "waist=70.0, clothingSize=M, adult=true, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "Actual:   Person<id=150245871, age=25, weight=50.1007, height=164, shoeSize=2, waist=70.0, " +
+                "clothingSize=M, adult=false, intArray=[5, 10, 897, 0, 7], longArray=[1, 16, 34, 149, 17]>\n" +
+                "\n" +
+                "--- Fields that differed ---\n" +
+                "adult expected: true\n" +
+                "adult actual:   false", e.getMessage());
     }
 }

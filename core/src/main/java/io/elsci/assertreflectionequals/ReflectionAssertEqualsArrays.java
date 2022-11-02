@@ -2,33 +2,33 @@ package io.elsci.assertreflectionequals;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Objects;
+import java.util.*;
 
 class ReflectionAssertEqualsArrays {
-    private final Deque<String> fullPath;
     private final Field field;
     private final boolean lenientOrder;
+    private final Deque<String> fullPath;
+    private final Map<Object, List<Object>> problemValues = new HashMap<>();
 
-    public ReflectionAssertEqualsArrays(Deque<String> fullPath, Field field, boolean lenientOrder) {
-        this.fullPath = fullPath;
+    public ReflectionAssertEqualsArrays(Field field, boolean lenientOrder, Deque<String> fullPath) {
         this.field = field;
         this.lenientOrder = lenientOrder;
+        this.fullPath = fullPath;
     }
 
-    public StringBuilder assertEquals(Object expectedObject, Object actualObject, StringBuilder errorMessage) {
-        fullPath.push(field.getName());
+    public void assertEquals(Object expectedObject, Object actualObject, List<Object> initialObjects) {
         if (!compareArrays(ReflectionUtil.get(field, expectedObject), ReflectionUtil.get(field, actualObject))) {
-            BuildErrorMessage.build(fullPath,
-                    Arrays.toString(getArrayWithValues(ReflectionUtil.get(field, expectedObject))), field.getName(),
-                    Arrays.toString(getArrayWithValues(ReflectionUtil.get(field, actualObject))), errorMessage);
+            fullPath.push(field.getName());
+            Object[] expectedArray = getArrayWithValues(ReflectionUtil.get(field, expectedObject));
+            Object[] actualArray = getArrayWithValues(ReflectionUtil.get(field, actualObject));
+
+            ErrorMessageBuilder builder = new ErrorMessageBuilder(initialObjects, fullPath, new StringBuilder());
+            builder.addArraysDiff(expectedArray, actualArray, problemValues)
+                    .addDeepDiff(expectedObject, actualObject);
+            throw new AssertionError(builder.build());
         }
-        fullPath.pop();
-        return errorMessage;
     }
 
-    // Compare arrays with primitives
     private boolean compareArrays(Object expectedObject, Object actualObject) {
         if (expectedObject == actualObject) {
             return true;
@@ -49,13 +49,16 @@ class ReflectionAssertEqualsArrays {
             Object exp = expectedArray[i];
             Object act = actualArray[i];
             if (!(Objects.equals(exp, act))) {
-                return false;
+                List<Object> values = new ArrayList<>();
+                values.add(exp);
+                values.add(act);
+                problemValues.put(i, values);
+                break;
             }
         }
-        return true;
+        return problemValues.isEmpty();
     }
 
-    // Get array with primitives
     private Object[] getArrayWithValues(Object o) {
         if (o == null) {
             return null;

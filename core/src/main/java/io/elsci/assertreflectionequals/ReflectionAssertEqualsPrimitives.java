@@ -2,23 +2,27 @@ package io.elsci.assertreflectionequals;
 
 import java.lang.reflect.Field;
 import java.util.Deque;
+import java.util.List;
 
 class ReflectionAssertEqualsPrimitives {
-    private final Deque<String> fullPath;
-    private final Field field;
 
-    public ReflectionAssertEqualsPrimitives(Deque<String> fullPath, Field field) {
-        this.fullPath = fullPath;
+    private final Field field;
+    private final Deque<String> fullPath;
+
+    public ReflectionAssertEqualsPrimitives(Field field, Deque<String> fullPath) {
         this.field = field;
+        this.fullPath = fullPath;
     }
 
-    public StringBuilder assertEquals(Object expectedObject, Object actualObject, StringBuilder errorMessage) {
-        fullPath.push(field.getName());
+    public void assertEquals(Object expectedObject, Object actualObject, List<Object> initialObjects) {
         if (!ReflectionUtil.get(field, expectedObject).equals(ReflectionUtil.get(field, actualObject))) {
-            BuildErrorMessage.build(fullPath, ReflectionUtil.get(field, expectedObject), field.getName(),
-                    ReflectionUtil.get(field, actualObject), errorMessage);
+            fullPath.push(field.getName());
+            ErrorMessageBuilder builder = new ErrorMessageBuilder(initialObjects, fullPath, new StringBuilder());
+            builder.addShallowDiff(
+                            ReflectionUtil.get(field, expectedObject),
+                            ReflectionUtil.get(field, actualObject))
+                    .addDeepDiff(expectedObject, actualObject);
+            throw new AssertionError(builder.build());
         }
-        fullPath.pop();
-        return errorMessage;
     }
 }
