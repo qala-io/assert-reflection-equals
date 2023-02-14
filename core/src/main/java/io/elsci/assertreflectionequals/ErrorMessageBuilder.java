@@ -71,23 +71,23 @@ class ErrorMessageBuilder {
      */
     public ErrorMessageBuilder addArraysDiff(Object[] expected, Object[] actual, Map<Object, List<Object>> problemValues) {
         // Array may contain primitives or objects. We need to detect it before invoking 'addShallowDiff' method
-        // since if it's array with objects, we need firstly build an object array string
-        if (expected == null && actual.length == 0 || actual == null && expected.length == 0) {
+        // since if it's array with objects, we need firstly build a general string with all array objects
+        if (isBlank(expected) && isBlank(actual)) {
             this.addShallowDiff(Arrays.toString(expected), Arrays.toString(actual));
-        } else if (expected == null || expected.length == 0) {
-            if (WRAPPER_TYPES.contains(actual[0].getClass())) {
+        } else if (isBlank(expected)) {
+            if (WRAPPER_TYPES.contains(actual.getClass().getComponentType())) {
                 this.addShallowDiff(Arrays.toString(expected), Arrays.toString(actual));
             } else {
                 this.addShallowDiff(Arrays.toString(expected), toStringArrayWithObjects(actual));
             }
-        } else if (actual == null || actual.length == 0) {
-            if (WRAPPER_TYPES.contains(expected[0].getClass())) {
+        } else if (isBlank(actual)) {
+            if (WRAPPER_TYPES.contains(expected.getClass().getComponentType())) {
                 this.addShallowDiff(Arrays.toString(expected), Arrays.toString(actual));
             } else {
                 this.addShallowDiff(toStringArrayWithObjects(expected), Arrays.toString(actual));
             }
         } else {
-            if (!WRAPPER_TYPES.contains(actual[0].getClass())) {
+            if (!WRAPPER_TYPES.contains(actual.getClass().getComponentType())) {
                 this.addShallowDiff(toStringArrayWithObjects(expected), toStringArrayWithObjects(actual));
             } else {
                 this.addShallowDiff(Arrays.toString(expected), Arrays.toString(actual));
@@ -99,7 +99,7 @@ class ErrorMessageBuilder {
             for (Map.Entry<Object, List<Object>> entry : problemValues.entrySet()) {
                 errorMessage.append(pathToProblematicField.getLast()).append("[").append(entry.getKey()).append("]")
                         .append(" expected: ");
-                if (WRAPPER_TYPES.contains(expected[0].getClass())) {
+                if (WRAPPER_TYPES.contains(expected.getClass().getComponentType())) {
                     errorMessage.append(entry.getValue().get(0));
                 } else {
                     errorMessage.append(toStringRecursive(entry.getValue().get(0), new IdentityHashSet<>(), new StringBuilder()));
@@ -108,7 +108,7 @@ class ErrorMessageBuilder {
 
                 errorMessage.append("\n").append(pathToProblematicField.getLast()).append("[").append(entry.getKey()).append("]")
                         .append(" actual:   ");
-                if (WRAPPER_TYPES.contains(expected[0].getClass())) {
+                if (WRAPPER_TYPES.contains(expected.getClass().getComponentType())) {
                     errorMessage.append(entry.getValue().get(1));
                 } else {
                     errorMessage.append(toStringRecursive(entry.getValue().get(1), new IdentityHashSet<>(), new StringBuilder()));
@@ -219,10 +219,14 @@ class ErrorMessageBuilder {
     /**
      * We end each field value with {@code >, }, so need to remove that last comma with the space.
      */
-    private static void removeLastFieldSeparator(StringBuilder sb) {
+    private void removeLastFieldSeparator(StringBuilder sb) {
         sb.setLength(sb.length() - 2);
     }
 
+    /**
+     * Example:
+     * <pre>[Person{@literal <}id=150245871, age=25, weight=50.1007, height=164>, Person{@literal <}id=150245871, age=25, weight=50.1007, height=164>]</pre>
+     */
     private StringBuilder toStringArrayWithObjects(Object[] array) {
         StringBuilder arrayWithObjects = new StringBuilder();
         arrayWithObjects.append("[");
@@ -232,5 +236,12 @@ class ErrorMessageBuilder {
         removeLastFieldSeparator(arrayWithObjects);
         arrayWithObjects.append("]");
         return arrayWithObjects;
+    }
+
+    /**
+     * Checks if array is null or empty
+     */
+    private boolean isBlank(Object[] object) {
+        return object == null || object.length == 0;
     }
 }

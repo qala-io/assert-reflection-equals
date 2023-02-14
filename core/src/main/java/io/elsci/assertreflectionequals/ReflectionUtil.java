@@ -26,7 +26,11 @@ class ReflectionUtil {
         if (o == null) {
             return null;
         }
-        Object[] elements = new Object[Array.getLength(o)];
+        // We'll not be able to build 'elements' array if initial array object is empty
+        if (Array.getLength(o) == 0) {
+            return (Object[]) Array.newInstance(o.getClass(), Array.getLength(o));
+        }
+        Object[] elements = (Object[]) Array.newInstance(Array.get(o, 0).getClass(), Array.getLength(o));
         for (int i = 0; i < Array.getLength(elements); i++) {
             Object element = Array.get(o, i);
             elements[i] = element;
