@@ -190,7 +190,7 @@ class ErrorMessageBuilder {
                     Object[] array = ReflectionUtil.getArrayWithValues(ReflectionUtil.get(f, object));
                     if (array.length == 0) {
                         sb.append("[]").append(", ");
-                    } else if (WRAPPER_TYPES.contains(array[0].getClass())) {
+                    } else if (WRAPPER_TYPES.contains(array.getClass().getComponentType())) {
                         String valueText = Arrays.deepToString(new Object[]{value});
                         valueText = valueText.substring(1, valueText.length() - 1); // remove an extra pair of square brackets
                         sb.append(valueText).append(", ");
@@ -241,7 +241,7 @@ class ErrorMessageBuilder {
     /**
      * Checks if array is null or empty
      */
-    private boolean isBlank(Object[] object) {
+    private static boolean isBlank(Object[] object) {
         return object == null || object.length == 0;
     }
 }
